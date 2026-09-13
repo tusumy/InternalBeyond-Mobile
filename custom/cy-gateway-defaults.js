@@ -33,6 +33,14 @@
     return swapNames(value).replace(/\bCY\b/g, BRAND);
   }
 
+  function installBrandStyle() {
+    if (document.getElementById('aevren-brand-style')) return;
+    var style = document.createElement('style');
+    style.id = 'aevren-brand-style';
+    style.textContent = ".cy-chat-hero::after{content:'AEVREN'!important;right:5px!important;bottom:-11px!important;font-size:3.35rem!important;letter-spacing:.02em!important;color:rgba(80,112,154,.065)!important;}";
+    (document.head || document.documentElement).appendChild(style);
+  }
+
   function patchPromptPayload(body) {
     if (!body || typeof body !== 'object') return body;
     if (body.prompt_blocks && typeof body.prompt_blocks === 'object') {
@@ -185,6 +193,7 @@
     }, 250);
   }
 
+  installBrandStyle();
   installPromptPatch();
   if (window.IBCY && typeof window.IBCY.ready === 'function') {
     window.IBCY.ready(function (shell) {
