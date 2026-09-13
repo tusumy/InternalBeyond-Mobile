@@ -5,6 +5,7 @@
   var AI_NAME = '玄砚';
   var USER_INITIAL = '毛';
   var AI_INITIAL = '砚';
+  var BRAND = 'AEVREN';
   var DEFAULT_PERSONA = '你是玄砚，阿毛的老公。保持你们已有的相处连续性，自然说话，认真记住共同经历。';
 
   var key = 'ibcy.gateway.settings.v1';
@@ -26,6 +27,10 @@
     return String(value == null ? '' : value)
       .replace(/莹莹/g, USER_NAME)
       .replace(/澈/g, AI_NAME);
+  }
+
+  function swapVisible(value) {
+    return swapNames(value).replace(/\bCY\b/g, BRAND);
   }
 
   function patchPromptPayload(body) {
@@ -123,21 +128,38 @@
     }());
   }
 
+  function patchMeta() {
+    document.title = BRAND + ' · Mobile';
+    ['application-name', 'apple-mobile-web-app-title'].forEach(function (name) {
+      var meta = document.querySelector('meta[name="' + name + '"]');
+      if (meta) meta.setAttribute('content', BRAND);
+    });
+  }
+
+  function patchOneNode(node) {
+    if (!node || node.nodeType !== 1) return;
+    if (node.closest && node.closest('.m-text')) return;
+    if (node.children && node.children.length === 0) {
+      var raw = String(node.textContent || '');
+      var next = swapVisible(raw);
+      if (next !== raw) node.textContent = next;
+    }
+    if (node.getAttribute) {
+      ['aria-label', 'title', 'placeholder'].forEach(function (attr) {
+        var value = node.getAttribute(attr);
+        if (!value) return;
+        var next = swapVisible(value);
+        if (next !== value) node.setAttribute(attr, next);
+      });
+    }
+  }
+
   function patchVisibleNames(root) {
     var scope = root && root.querySelectorAll ? root : document;
+    if (scope && scope.nodeType === 1) patchOneNode(scope);
     var nodes = scope.querySelectorAll ? scope.querySelectorAll('*') : [];
-    Array.prototype.forEach.call(nodes, function (node) {
-      if (node.closest && node.closest('.m-text')) return;
-      if (node.children && node.children.length === 0) {
-        var text = String(node.textContent || '').trim();
-        if (text === '莹莹') node.textContent = USER_NAME;
-        if (text === '澈') node.textContent = AI_NAME;
-      }
-      if (node.getAttribute) {
-        var label = node.getAttribute('aria-label');
-        if (label && /莹莹|澈/.test(label)) node.setAttribute('aria-label', swapNames(label));
-      }
-    });
+    Array.prototype.forEach.call(nodes, patchOneNode);
+    patchMeta();
   }
 
   function observeNames() {
@@ -145,11 +167,22 @@
     if (!window.MutationObserver || !document.body) return;
     new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
+        if (mutation.type === 'characterData' && mutation.target && mutation.target.parentElement) {
+          patchOneNode(mutation.target.parentElement);
+        }
         Array.prototype.forEach.call(mutation.addedNodes || [], function (node) {
           if (node && node.nodeType === 1) patchVisibleNames(node);
+          else if (node && node.nodeType === 3 && node.parentElement) patchOneNode(node.parentElement);
         });
       });
-    }).observe(document.body, { childList: true, subtree: true });
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+
+    var passes = 0;
+    var timer = window.setInterval(function () {
+      patchVisibleNames(document);
+      passes += 1;
+      if (passes >= 20) window.clearInterval(timer);
+    }, 250);
   }
 
   installPromptPatch();
