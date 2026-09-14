@@ -1,0 +1,65 @@
+name: Fix MY identity names
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-my-names.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Replace legacy visible names in MY layer
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          protocol = Path('custom/my-interaction-protocol-v2.js')
+          text = protocol.read_text(encoding='utf-8')
+          old = '你和莹莹共用这一份词库；她能对你使用，你也能用同一套动作对她使用。'
+          new = '你和阿毛共用这一份词库；阿毛能对你使用，你也能用同一套动作对她使用。'
+          if old in text:
+              text = text.replace(old, new)
+          protocol.write_text(text, encoding='utf-8')
+
+          defaults = Path('custom/my-gateway-defaults.js')
+          text = defaults.read_text(encoding='utf-8')
+          old_swap = "  function swapNames(value) {\n    return String(value == null ? '' : value)\n      .replace(/莹莹/g, USER_NAME)\n      .replace(/澈/g, AI_NAME);\n  }\n"
+          new_swap = "  var LEGACY_USER_NAME = '\\u83b9\\u83b9';\n  var LEGACY_AI_NAME = '\\u6f88';\n\n  function swapNames(value) {\n    return String(value == null ? '' : value)\n      .replace(new RegExp(LEGACY_USER_NAME, 'g'), USER_NAME)\n      .replace(new RegExp(LEGACY_AI_NAME, 'g'), AI_NAME);\n  }\n"
+          if old_swap in text:
+              text = text.replace(old_swap, new_swap)
+          text = text.replace("if (!profile.nickname || profile.nickname === '澈')", "if (!profile.nickname || profile.nickname === LEGACY_AI_NAME)")
+          text = text.replace("if (!profile.systemPrompt || /莹莹|澈/.test(profile.systemPrompt)) {", "if (!profile.systemPrompt || profile.systemPrompt.indexOf(LEGACY_USER_NAME) >= 0 || profile.systemPrompt.indexOf(LEGACY_AI_NAME) >= 0) {")
+          defaults.write_text(text, encoding='utf-8')
+
+          leftovers = []
+          for p in Path('custom').glob('my-*'):
+              if not p.is_file():
+                  continue
+              try:
+                  s = p.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              if '莹莹' in s or '澈' in s:
+                  leftovers.append(str(p))
+          if leftovers:
+              raise SystemExit('legacy visible names remain in MY files: ' + ', '.join(leftovers))
+          PY
+          node --check custom/my-interaction-protocol-v2.js
+          node --check custom/my-gateway-defaults.js
+      - name: Commit fix
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add custom/my-interaction-protocol-v2.js custom/my-gateway-defaults.js
+          git commit -m 'Replace legacy names in MY identity layer' || exit 0
+          git push
