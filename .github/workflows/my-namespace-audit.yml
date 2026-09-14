@@ -1,0 +1,43 @@
+name: MY namespace audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/my-namespace-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find legacy namespace residues
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+          upper = chr(67) + chr(89)
+          lower = upper.lower()
+          binary = {'.png','.jpg','.jpeg','.gif','.webp','.ico','.zip','.apk','.woff','.woff2','.ttf','.otf','.pdf'}
+          hits = []
+          for p in Path('.').rglob('*'):
+              if not p.is_file() or '.git' in p.parts or p.suffix.lower() in binary:
+                  continue
+              if len(p.parts) >= 2 and p.parts[0] == '.github' and p.parts[1] == 'workflows':
+                  continue
+              try:
+                  lines = p.read_text(encoding='utf-8').splitlines()
+              except Exception:
+                  continue
+              for n, line in enumerate(lines, 1):
+                  if upper in line or ('ib' + lower) in line or (lower + '_') in line or (lower + '-') in line:
+                      hits.append(f'{p}:{n}:{line[:300]}')
+          if hits:
+              print('\n'.join(hits[:500]))
+              sys.exit(1)
+          print('clean')
+          PY
