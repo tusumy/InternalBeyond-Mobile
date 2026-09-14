@@ -1,4 +1,4 @@
-name: Verify IB CY
+name: Verify IB MY
 
 on:
   push:
@@ -26,18 +26,18 @@ jobs:
         run: python -m pip install -r gateway/requirements.txt
       - name: Check JavaScript syntax
         run: |
-          node --check custom/cy-shell.js
-          node --check custom/cy-ob-bridge.js
-          node --check custom/cy-gateway.js
-          node --check custom/cy-gateway-defaults.js
-          node --check custom/cy-model-picker.js
-          node --check custom/cy-mutual-paw.js
-          node --check custom/cy-interaction-lexicon.js
-          node --check custom/cy-interaction-protocol-v2.js
-          node --check custom/cy-paw-stream-fast.js
-          node --check custom/cy-interaction-thread-v2.js
-          node --check custom/cy-identity.js
-          node --check custom/cy-chat-polish.js
+          node --check custom/my-shell.js
+          node --check custom/my-ob-bridge.js
+          node --check custom/my-gateway.js
+          node --check custom/my-gateway-defaults.js
+          node --check custom/my-model-picker.js
+          node --check custom/my-mutual-paw.js
+          node --check custom/my-interaction-lexicon.js
+          node --check custom/my-interaction-protocol-v2.js
+          node --check custom/my-paw-stream-fast.js
+          node --check custom/my-interaction-thread-v2.js
+          node --check custom/my-identity.js
+          node --check custom/my-chat-polish.js
           node --check apps/catalog.js
           node --check apps/ib-app-cinema.js
           node --check ib-sw.js
