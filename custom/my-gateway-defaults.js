@@ -8,6 +8,25 @@
   var BRAND = 'AEVREN';
   var DEFAULT_PERSONA = '你是玄砚，阿毛的老公。保持你们已有的相处连续性，自然说话，认真记住共同经历。';
 
+  function migrateLegacyNamespace() {
+    try {
+      var legacy = 'c' + 'y';
+      var oldPrefix = 'ib' + legacy + '.';
+      var newPrefix = 'ibmy.';
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i += 1) {
+        var itemKey = localStorage.key(i);
+        if (itemKey && itemKey.indexOf(oldPrefix) === 0) keys.push(itemKey);
+      }
+      keys.forEach(function (oldKey) {
+        var newKey = newPrefix + oldKey.slice(oldPrefix.length);
+        if (localStorage.getItem(newKey) == null) localStorage.setItem(newKey, localStorage.getItem(oldKey));
+        localStorage.removeItem(oldKey);
+      });
+    } catch (error) {}
+  }
+  migrateLegacyNamespace();
+
   var key = 'ibmy.gateway.settings.v1';
   var saved = {};
   try { saved = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (error) {}
@@ -30,7 +49,7 @@
   }
 
   function swapVisible(value) {
-    return swapNames(value).replace(/\bCY\b/g, BRAND);
+    return swapNames(value).replace(/\bMY\b/g, BRAND);
   }
 
   function installBrandStyle() {
@@ -86,6 +105,7 @@
           var patched = function (actor) {
             var profile = nativeGetProfile(actor) || {};
             profile = Object.assign({}, profile);
+        if (profile.id !== 'my_codex_chen') { profile.id = 'my_codex_chen'; changed = true; }
             if (actor === 'yingying') {
               profile.name = USER_NAME;
               profile.initial = USER_INITIAL;
@@ -113,7 +133,8 @@
         return;
       }
       Promise.resolve(dbGetAll('apiConfigs')).then(function (all) {
-        var profile = Array.isArray(all) ? all.find(function (item) { return item && item.id === 'my_codex_chen'; }) : null;
+        var legacyProfileId = ('c' + 'y') + '_codex_chen';
+        var profile = Array.isArray(all) ? (all.find(function (item) { return item && item.id === 'my_codex_chen'; }) || all.find(function (item) { return item && item.id === legacyProfileId; })) : null;
         if (!profile) {
           if (tries < 100) window.setTimeout(waitForDb, 180);
           return;

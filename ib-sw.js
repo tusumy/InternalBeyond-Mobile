@@ -1,6 +1,6 @@
 /* InternalBeyond Mobile — AEVREN service worker overlay.
    Keeps upstream index.html untouched and injects the existing extension shell at response time. */
-const IB_CACHE='ib-cache-v25-aevren';
+const IB_CACHE='ib-cache-v26-aevren';
 const IB_CORE=[
   './',
   './index.html',
