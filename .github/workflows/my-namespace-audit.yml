@@ -21,54 +21,27 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           upper = chr(67) + chr(89)
           p = Path('custom/my-gateway-defaults.js')
           text = p.read_text(encoding='utf-8')
           text = text.replace(r'\b' + upper + r'\b', r'\bMY\b')
-
           if 'function migrateLegacyNamespace()' not in text:
               marker = "  var DEFAULT_PERSONA = '你是玄砚，阿毛的老公。保持你们已有的相处连续性，自然说话，认真记住共同经历。';\n"
-              insert = """
-
-  function migrateLegacyNamespace() {
-    try {
-      var legacy = 'c' + 'y';
-      var oldPrefix = 'ib' + legacy + '.';
-      var newPrefix = 'ibmy.';
-      var keys = [];
-      for (var i = 0; i < localStorage.length; i += 1) {
-        var itemKey = localStorage.key(i);
-        if (itemKey && itemKey.indexOf(oldPrefix) === 0) keys.push(itemKey);
-      }
-      keys.forEach(function (oldKey) {
-        var newKey = newPrefix + oldKey.slice(oldPrefix.length);
-        if (localStorage.getItem(newKey) == null) localStorage.setItem(newKey, localStorage.getItem(oldKey));
-        localStorage.removeItem(oldKey);
-      });
-    } catch (error) {}
-  }
-  migrateLegacyNamespace();
-"""
+              insert = "\n  function migrateLegacyNamespace() {\n    try {\n      var legacy = 'c' + 'y';\n      var oldPrefix = 'ib' + legacy + '.';\n      var newPrefix = 'ibmy.';\n      var keys = [];\n      for (var i = 0; i < localStorage.length; i += 1) {\n        var itemKey = localStorage.key(i);\n        if (itemKey && itemKey.indexOf(oldPrefix) === 0) keys.push(itemKey);\n      }\n      keys.forEach(function (oldKey) {\n        var newKey = newPrefix + oldKey.slice(oldPrefix.length);\n        if (localStorage.getItem(newKey) == null) localStorage.setItem(newKey, localStorage.getItem(oldKey));\n        localStorage.removeItem(oldKey);\n      });\n    } catch (error) {}\n  }\n  migrateLegacyNamespace();\n"
               if marker not in text:
                   raise SystemExit('persona marker not found')
               text = text.replace(marker, marker + insert, 1)
-
           old_line = "        var profile = Array.isArray(all) ? all.find(function (item) { return item && item.id === 'my_codex_chen'; }) : null;"
-          new_lines = """        var legacyProfileId = ('c' + 'y') + '_codex_chen';
-        var profile = Array.isArray(all) ? (all.find(function (item) { return item && item.id === 'my_codex_chen'; }) || all.find(function (item) { return item && item.id === legacyProfileId; })) : null;"""
           if old_line in text:
+              new_lines = "        var legacyProfileId = ('c' + 'y') + '_codex_chen';\n        var profile = Array.isArray(all) ? (all.find(function (item) { return item && item.id === 'my_codex_chen'; }) || all.find(function (item) { return item && item.id === legacyProfileId; })) : null;"
               text = text.replace(old_line, new_lines, 1)
               clone_line = "        profile = Object.assign({}, profile);"
               text = text.replace(clone_line, clone_line + "\n        if (profile.id !== 'my_codex_chen') { profile.id = 'my_codex_chen'; changed = true; }", 1)
-
           p.write_text(text, encoding='utf-8')
-
           sw = Path('ib-sw.js')
-          sw_text = sw.read_text(encoding='utf-8').replace("ib-cache-v25-aevren", "ib-cache-v26-aevren")
+          sw_text = sw.read_text(encoding='utf-8').replace('ib-cache-v25-aevren', 'ib-cache-v26-aevren')
           sw.write_text(sw_text, encoding='utf-8')
           PY
-
       - name: Audit legacy namespace residues
         shell: bash
         run: |
@@ -98,7 +71,6 @@ jobs:
               sys.exit(1)
           print('clean')
           PY
-
       - name: Commit cleanup
         shell: bash
         run: |
