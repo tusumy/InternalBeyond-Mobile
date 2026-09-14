@@ -10,8 +10,8 @@
 
     var STORAGE_KEY = 'ibmy.identity.profiles.v1';
     var defaults = {
-      yingying: { id: 'yingying', name: '莹莹', initial: '莹', avatar: '' },
-      chen: { id: 'chen', name: '澈', initial: '澈', avatar: '' }
+      yingying: { id: 'yingying', name: '阿毛', initial: '毛', avatar: '' },
+      chen: { id: 'chen', name: '玄砚', initial: '砚', avatar: '' }
     };
     var modal = null;
     var activeActor = '';
@@ -207,11 +207,11 @@
           '<div class="my-id-head"><div><small>MY IDENTITIES</small><h3 id="my-id-title">我们两个的头像</h3></div><button class="my-id-close" type="button" aria-label="关闭">×</button></div>' +
           '<p class="my-id-hint">头像只保存在这台设备，不会提交到公开仓库。互动按钮会自动读取这里的头像。</p>' +
           '<div class="my-id-profile" data-profile="yingying">' +
-            '<div class="my-id-avatar"></div><div class="my-id-profile-copy"><b>莹莹</b><span class="my-id-profile-state"></span></div>' +
+            '<div class="my-id-avatar"></div><div class="my-id-profile-copy"><b>阿毛</b><span class="my-id-profile-state"></span></div>' +
             '<div class="my-id-profile-actions"><button type="button" data-pick="yingying">换头像</button><button type="button" data-reset="yingying">恢复</button></div>' +
           '</div>' +
           '<div class="my-id-profile" data-profile="chen">' +
-            '<div class="my-id-avatar"></div><div class="my-id-profile-copy"><b>澈</b><span class="my-id-profile-state"></span></div>' +
+            '<div class="my-id-avatar"></div><div class="my-id-profile-copy"><b>玄砚</b><span class="my-id-profile-state"></span></div>' +
             '<div class="my-id-profile-actions"><button type="button" data-pick="chen">换头像</button><button type="button" data-reset="chen">恢复</button></div>' +
           '</div>' +
           '<div class="my-id-status" id="my-id-status" aria-live="polite"></div>' +
