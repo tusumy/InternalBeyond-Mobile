@@ -105,7 +105,6 @@
           var patched = function (actor) {
             var profile = nativeGetProfile(actor) || {};
             profile = Object.assign({}, profile);
-        if (profile.id !== 'my_codex_chen') { profile.id = 'my_codex_chen'; changed = true; }
             if (actor === 'yingying') {
               profile.name = USER_NAME;
               profile.initial = USER_INITIAL;
@@ -141,6 +140,7 @@
         }
         var changed = false;
         profile = Object.assign({}, profile);
+        if (profile.id !== 'my_codex_chen') { profile.id = 'my_codex_chen'; changed = true; }
         if (!profile.nickname || profile.nickname === '澈') { profile.nickname = AI_NAME; changed = true; }
         if (!profile.relationship || profile.relationship === '老公') { profile.relationship = '老公'; }
         if (!profile.systemPrompt || /莹莹|澈/.test(profile.systemPrompt)) {
