@@ -13,6 +13,8 @@
     var listNode = null;
     var statusNode = null;
     var refreshButton = null;
+    var settingsButton = null;
+    var manualButton = null;
     var busy = false;
 
     function readSettings() {
@@ -24,8 +26,22 @@
     function writeSettings(next) {
       var current = readSettings();
       var merged = Object.assign({}, current, next || {});
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged));
+      try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged)); } catch (error) {}
       return merged;
+    }
+
+    function activeCfg() {
+      try { return typeof _activeCfg !== 'undefined' ? _activeCfg : null; } catch (error) { return null; }
+    }
+
+    function isSubscription(cfg) {
+      return !!(cfg && cfg.subscriptionGateway);
+    }
+
+    function currentModel() {
+      var cfg = activeCfg();
+      if (cfg && !isSubscription(cfg)) return String(cfg.model || '').trim();
+      return String(readSettings().model || (cfg && cfg.model) || 'Codex 默认').trim();
     }
 
     function baseOf(endpoint) {
@@ -39,59 +55,100 @@
     }
 
     function updatePill(model) {
-      var value = String(model || readSettings().model || 'Codex 默认');
+      var value = String(model || currentModel() || '选择模型');
       var pill = document.getElementById('cy-model-pill');
-      if (pill) pill.textContent = value + '  ▾';
+      if (pill) {
+        pill.textContent = value + '  ▾';
+        pill.setAttribute('aria-label', '选择当前聊天模型');
+      }
+    }
+
+    function configureSheet() {
+      if (!mask) return;
+      var cfg = activeCfg();
+      var sub = isSubscription(cfg);
+      var kicker = mask.querySelector('.cy-model-head small');
+      var desc = mask.querySelector('.cy-model-sub');
+      if (kicker) kicker.textContent = sub ? 'CHATGPT · CODEX' : 'API MODELS';
+      if (desc) desc.textContent = sub
+        ? '这里显示当前 ChatGPT / Codex 订阅账号实际返回的可用模型。'
+        : '这里显示当前聊天所用 API 配置返回的可用模型；也可以手动输入模型 ID。';
+      if (settingsButton) settingsButton.textContent = sub ? '订阅设置' : 'API 设置';
     }
 
     function installSheet() {
-      if (mask) return mask;
+      if (mask) {
+        configureSheet();
+        return mask;
+      }
       mask = document.createElement('div');
       mask.id = 'cy-model-mask';
       mask.className = 'cy-model-mask';
       mask.hidden = true;
       mask.innerHTML = '<section class="cy-model-sheet" role="dialog" aria-modal="true" aria-labelledby="cy-model-title">' +
         '<div class="cy-model-handle" aria-hidden="true"></div>' +
-        '<div class="cy-model-head"><div><small>CODEX MODELS</small><h3 id="cy-model-title">选择模型</h3></div><button class="cy-model-close" type="button" aria-label="关闭">×</button></div>' +
-        '<p class="cy-model-sub">这里显示当前 ChatGPT / Codex 账号实际返回的可用模型。</p>' +
+        '<div class="cy-model-head"><div><small>API MODELS</small><h3 id="cy-model-title">选择模型</h3></div><button class="cy-model-close" type="button" aria-label="关闭">×</button></div>' +
+        '<p class="cy-model-sub">这里显示当前聊天所用 API 配置返回的可用模型。</p>' +
         '<div class="cy-model-status" id="cy-model-status">正在读取模型…</div>' +
         '<div class="cy-model-list" id="cy-model-list"></div>' +
-        '<div class="cy-model-tools"><button id="cy-model-refresh" type="button">刷新模型列表</button><button id="cy-model-settings" type="button">订阅设置</button></div>' +
+        '<div class="cy-model-tools"><button id="cy-model-refresh" type="button">刷新模型列表</button><button id="cy-model-manual" type="button">手动输入</button><button id="cy-model-settings" type="button">API 设置</button></div>' +
         '</section>';
       document.body.appendChild(mask);
       listNode = mask.querySelector('#cy-model-list');
       statusNode = mask.querySelector('#cy-model-status');
       refreshButton = mask.querySelector('#cy-model-refresh');
+      settingsButton = mask.querySelector('#cy-model-settings');
+      manualButton = mask.querySelector('#cy-model-manual');
 
       mask.querySelector('.cy-model-close').addEventListener('click', close);
       mask.addEventListener('click', function (event) { if (event.target === mask) close(); });
       refreshButton.addEventListener('click', function () { refresh(true).catch(function () {}); });
-      mask.querySelector('#cy-model-settings').addEventListener('click', function () {
+      manualButton.addEventListener('click', function () {
+        if (busy) return;
+        var value = window.prompt('输入模型 ID', currentModel() || '');
+        if (value == null) return;
+        choose(value).catch(function (error) { showError(error); });
+      });
+      settingsButton.addEventListener('click', function () {
+        var cfg = activeCfg();
         close();
-        if (shell.gateway && typeof shell.gateway.openSetup === 'function') shell.gateway.openSetup();
+        if (isSubscription(cfg)) {
+          if (shell.gateway && typeof shell.gateway.openSetup === 'function') shell.gateway.openSetup();
+          return;
+        }
+        try {
+          if (cfg && typeof openAset === 'function') openAset(cfg);
+          else if (typeof navTo === 'function') navTo('api');
+        } catch (error) {}
       });
       listNode.addEventListener('click', function (event) {
         var button = event.target.closest && event.target.closest('button[data-model]');
         if (!button || busy) return;
         choose(button.dataset.model).catch(function (error) { showError(error); });
       });
+      configureSheet();
       return mask;
     }
 
-    function modelIds(payload) {
+    function normalizeModels(payload) {
       var ids = [];
-      var data = payload && Array.isArray(payload.data) ? payload.data : [];
+      var data = [];
+      if (payload) {
+        if (Array.isArray(payload.data)) data = payload.data;
+        else if (Array.isArray(payload.models)) data = payload.models;
+        else if (Array.isArray(payload.items)) data = payload.items;
+      }
       data.forEach(function (item) {
-        var id = typeof item === 'string' ? item : item && (item.id || item.model || item.slug);
-        id = String(id || '').trim();
+        var id = typeof item === 'string' ? item : item && (item.id || item.model || item.slug || item.name);
+        id = String(id || '').trim().replace(/^models\//, '');
         if (id && ids.indexOf(id) < 0) ids.push(id);
       });
-      var current = String(readSettings().model || '').trim();
+      var current = currentModel();
       if (current && ids.indexOf(current) < 0) ids.unshift(current);
       return ids;
     }
 
-    async function fetchModels() {
+    async function fetchSubscriptionModels() {
       var settings = readSettings();
       if (!settings.endpoint || !settings.token) throw new Error('先把订阅网关连接好');
       var headers = { Accept: 'application/json', Authorization: 'Bearer ' + settings.token };
@@ -100,15 +157,67 @@
         var detail = await response.text().catch(function () { return ''; });
         throw new Error('模型列表读取失败，HTTP ' + response.status + (detail ? '：' + detail.slice(0, 120) : ''));
       }
-      return modelIds(await response.json());
+      return normalizeModels(await response.json());
+    }
+
+    function nativeModelRequests(cfg) {
+      var out = [];
+      var provider = String(cfg && cfg.provider || 'custom');
+      var endpoint = String(cfg && cfg.endpoint || '');
+      var key = String(cfg && cfg.apiKey || '');
+      try {
+        if (provider === 'custom' && typeof _modelListReqCustom === 'function') {
+          out = _modelListReqCustom(endpoint, key) || [];
+          if (!Array.isArray(out)) out = [out];
+        } else if (typeof _modelListReq === 'function') {
+          var one = _modelListReq(provider, endpoint, key);
+          if (one) out = [one];
+        }
+      } catch (error) {}
+      return out.filter(Boolean);
+    }
+
+    async function fetchNativeModels(cfg) {
+      if (!cfg) throw new Error('当前没有打开聊天');
+      var reqs = nativeModelRequests(cfg);
+      if (!reqs.length) {
+        var current = currentModel();
+        if (current) return [current];
+        throw new Error('这个 API 没有可读取的模型列表，可以点「手动输入」直接填写模型 ID');
+      }
+      var errors = [];
+      for (var i = 0; i < reqs.length; i += 1) {
+        var req = reqs[i];
+        try {
+          var response = await window.fetch(req.url, { cache: 'no-store', headers: req.headers || {} });
+          if (!response.ok) {
+            errors.push('HTTP ' + response.status);
+            continue;
+          }
+          var models = normalizeModels(await response.json());
+          if (models.length) return models;
+        } catch (error) {
+          errors.push(String(error && error.message || error));
+        }
+      }
+      var now = currentModel();
+      if (now) return [now];
+      throw new Error('模型列表读取失败' + (errors.length ? '：' + errors[0] : '') + '；可以点「手动输入」直接填写模型 ID');
+    }
+
+    async function fetchModels() {
+      var cfg = activeCfg();
+      if (isSubscription(cfg)) return fetchSubscriptionModels();
+      return fetchNativeModels(cfg);
     }
 
     function render(models) {
       installSheet();
-      var current = String(readSettings().model || '');
+      configureSheet();
+      var current = currentModel();
       listNode.textContent = '';
       if (!models.length) {
-        statusNode.textContent = '当前账号没有返回可选模型。';
+        statusNode.textContent = '当前接口没有返回可选模型，可以点「手动输入」。';
         return;
       }
       statusNode.textContent = '当前：' + (current || '未选择') + ' · 共 ' + models.length + ' 个';
@@ -131,11 +240,12 @@
 
     async function refresh(force) {
       installSheet();
+      configureSheet();
       if (busy && !force) return;
       busy = true;
       refreshButton.disabled = true;
       statusNode.classList.remove('error');
-      statusNode.textContent = '正在读取当前账号可用模型…';
+      statusNode.textContent = '正在读取当前聊天可用模型…';
       try {
         var models = await fetchModels();
         render(models);
@@ -154,20 +264,30 @@
       if (!model) return;
       busy = true;
       try {
-        writeSettings({ model: model });
-        var field = document.getElementById('cy-gw-model');
-        if (field) field.value = model;
-        try {
-          if (typeof _activeCfg !== 'undefined' && _activeCfg && _activeCfg.subscriptionGateway) _activeCfg.model = model;
-        } catch (error) {}
-        try {
-          if (typeof _cfgs !== 'undefined' && Array.isArray(_cfgs)) {
-            _cfgs.forEach(function (cfg) { if (cfg && cfg.subscriptionGateway) cfg.model = model; });
-          }
-        } catch (error) {}
-        if (shell.gateway && typeof shell.gateway.ensureProfile === 'function') await shell.gateway.ensureProfile();
+        var cfg = activeCfg();
+        if (isSubscription(cfg)) {
+          writeSettings({ model: model });
+          var field = document.getElementById('cy-gw-model');
+          if (field) field.value = model;
+          try { if (cfg) cfg.model = model; } catch (error) {}
+          try {
+            if (typeof _cfgs !== 'undefined' && Array.isArray(_cfgs)) {
+              _cfgs.forEach(function (item) { if (item && item.subscriptionGateway) item.model = model; });
+            }
+          } catch (error) {}
+          if (shell.gateway && typeof shell.gateway.ensureProfile === 'function') await shell.gateway.ensureProfile();
+        } else {
+          if (!cfg) throw new Error('当前没有打开聊天');
+          cfg.model = model;
+          try {
+            if (typeof _cfgs !== 'undefined' && Array.isArray(_cfgs)) {
+              _cfgs.forEach(function (item) { if (item && item.id === cfg.id) item.model = model; });
+            }
+          } catch (error) {}
+          if (typeof dbPut === 'function') await dbPut('apiConfigs', cfg);
+        }
         updatePill(model);
-        window.dispatchEvent(new CustomEvent('ibcy:model-change', { detail: { model: model } }));
+        window.dispatchEvent(new CustomEvent('ibcy:model-change', { detail: { model: model, configId: cfg && cfg.id || '' } }));
         try { if (typeof toast === 'function') toast('已切换到 ' + model); } catch (error) {}
         close();
       } finally {
@@ -177,13 +297,17 @@
 
     function open() {
       installSheet();
-      var settings = readSettings();
-      if (!settings.endpoint || !settings.token) {
-        if (shell.gateway && typeof shell.gateway.openSetup === 'function') shell.gateway.openSetup();
-        return;
+      configureSheet();
+      var cfg = activeCfg();
+      if (isSubscription(cfg)) {
+        var settings = readSettings();
+        if (!settings.endpoint || !settings.token) {
+          if (shell.gateway && typeof shell.gateway.openSetup === 'function') shell.gateway.openSetup();
+          return;
+        }
       }
       mask.hidden = false;
-      updatePill(settings.model);
+      updatePill();
       refresh(false).catch(function () {});
     }
 
@@ -193,15 +317,21 @@
 
     document.addEventListener('click', function (event) {
       var pill = event.target.closest && event.target.closest('#cy-model-pill');
-      if (!pill) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      open();
+      if (pill) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        open();
+        return;
+      }
+      window.setTimeout(function () { updatePill(); }, 0);
     }, true);
 
     window.addEventListener('ibcy:gateway-status', function () { updatePill(); });
     window.addEventListener('ibcy:model-change', function (event) {
       updatePill(event && event.detail && event.detail.model);
+    });
+    window.addEventListener('storage', function (event) {
+      if (event.key === SETTINGS_KEY) updatePill();
     });
 
     shell.models = {
@@ -209,9 +339,9 @@
       close: close,
       refresh: refresh,
       set: choose,
-      get: function () { return readSettings().model; }
+      get: currentModel
     };
 
-    updatePill();
+    window.setTimeout(function () { updatePill(); }, 0);
   });
 }());
