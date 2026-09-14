@@ -64,7 +64,7 @@ class OmbreClientTests(unittest.IsolatedAsyncioTestCase):
 
 class OmbreRecallTests(unittest.IsolatedAsyncioTestCase):
     def test_hidden_runtime_is_not_used_as_search_query(self):
-        raw = "今晚吃火锅\n\n[CY_INTERACTION_RUNTIME]\n机器协议\n[/CY_INTERACTION_RUNTIME]"
+        raw = "今晚吃火锅\n\n[MY_INTERACTION_RUNTIME]\n机器协议\n[/MY_INTERACTION_RUNTIME]"
         self.assertEqual(_visible_query(raw), "今晚吃火锅")
         self.assertEqual(_visible_query('[interaction.paw]\n{"action":"抱紧"}'), "")
 
@@ -88,7 +88,7 @@ class OmbreRecallTests(unittest.IsolatedAsyncioTestCase):
     def test_recalled_memory_is_hidden_context_not_transcript_mutation(self):
         body = ChatRequest(messages=[{"role": "user", "content": "还记得吗"}])
         rendered = turn_text(body, False, "我记得那天一起看海。")
-        self.assertIn("[CY_OB_MEMORY]", rendered)
+        self.assertIn("[MY_OB_MEMORY]", rendered)
         self.assertIn("我记得那天一起看海。", rendered)
         self.assertEqual(body.messages[0]["content"], "还记得吗")
 

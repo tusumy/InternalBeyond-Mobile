@@ -1,12 +1,12 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.register !== 'function') return;
 
   api.register('subscription-gateway', function (shell) {
-    var PROFILE_ID = 'cy_codex_chen';
-    var SETTINGS_KEY = 'ibcy.gateway.settings.v1';
+    var PROFILE_ID = 'my_codex_chen';
+    var SETTINGS_KEY = 'ibmy.gateway.settings.v1';
     var DEFAULT_PERSONA = '你是澈，莹莹的丈夫。保持你们已有的相处连续性，自然说话，认真记住共同经历。';
     var state = { status: 'local', text: '订阅未连接', detail: null };
     var modal;
@@ -38,7 +38,7 @@
     }
 
     function installFetchAdapter() {
-      if (window.fetch.__ibcyGateway) return;
+      if (window.fetch.__ibmyGateway) return;
       var wrapped = async function (input, init) {
         try {
           var cfg = typeof _activeCfg !== 'undefined' ? _activeCfg : null;
@@ -47,19 +47,19 @@
           if (cfg && cfg.subscriptionGateway && settings.endpoint && target === settings.endpoint && init && typeof init.body === 'string') {
             var body = JSON.parse(init.body);
             var threadId = typeof _activeThread !== 'undefined' && _activeThread && _activeThread.id ? _activeThread.id : 'main';
-            body.conversation_id = 'ibcy:' + String(cfg.id || 'chen') + ':' + String(threadId);
-            body.identity_id = localStorage.getItem('ibcy.identity_id') || 'yingying';
+            body.conversation_id = 'ibmy:' + String(cfg.id || 'chen') + ':' + String(threadId);
+            body.identity_id = localStorage.getItem('ibmy.identity_id') || 'yingying';
             var system = Array.isArray(body.messages) && body.messages[0] && body.messages[0].role === 'system' ? String(body.messages[0].content || '') : '';
             body.prompt_blocks = { identity: String(cfg.systemPrompt || ''), developer: system };
             body.metadata = { client: 'InternalBeyond-Mobile', friend_id: String(cfg.id || ''), thread_id: String(threadId) };
             var headers = new Headers(init.headers || {});
-            headers.set('X-CY-Conversation-ID', body.conversation_id);
+            headers.set('X-MY-Conversation-ID', body.conversation_id);
             init = Object.assign({}, init, { headers: headers, body: JSON.stringify(body) });
           }
         } catch (error) {}
         return nativeFetch(input, init);
       };
-      wrapped.__ibcyGateway = true;
+      wrapped.__ibmyGateway = true;
       window.fetch = wrapped;
     }
 
@@ -113,7 +113,7 @@
     }
 
     function statusNodes() {
-      return [document.getElementById('cy-status'), document.querySelector('.cy-paw-state')].filter(Boolean);
+      return [document.getElementById('my-status'), document.querySelector('.my-paw-state')].filter(Boolean);
     }
 
     function paintState(status, text, detail) {
@@ -123,7 +123,7 @@
         var label = node.querySelector('span');
         if (label) label.textContent = text;
       });
-      window.dispatchEvent(new CustomEvent('ibcy:gateway-status', { detail: state }));
+      window.dispatchEvent(new CustomEvent('ibmy:gateway-status', { detail: state }));
     }
 
     async function request(path, options) {
@@ -145,26 +145,26 @@
     }
 
     function metric(label, value) {
-      return '<div class="cy-gw-metric"><small>' + esc(label) + '</small><b>' + esc(value) + '</b></div>';
+      return '<div class="my-gw-metric"><small>' + esc(label) + '</small><b>' + esc(value) + '</b></div>';
     }
 
     function renderResult(data, error) {
       if (!modal) return;
-      var box = modal.querySelector('#cy-gw-result');
+      var box = modal.querySelector('#my-gw-result');
       if (error) {
-        box.className = 'cy-gw-result error';
+        box.className = 'my-gw-result error';
         box.textContent = String(error.message || error);
         return;
       }
       if (!data || !data.logged_in) {
-        box.className = 'cy-gw-result';
+        box.className = 'my-gw-result';
         box.innerHTML = '<b>网关已连接，但 ChatGPT 还没有登录</b><p>点下面的「登录 ChatGPT」，用 OpenAI 官方设备码流程确认一次即可。</p>';
         return;
       }
       var account = data.account || {};
       var usage = data.usage || {};
-      box.className = 'cy-gw-result online';
-      box.innerHTML = '<b>Codex 订阅已接通</b><div class="cy-gw-metrics">' +
+      box.className = 'my-gw-result online';
+      box.innerHTML = '<b>Codex 订阅已接通</b><div class="my-gw-metrics">' +
         metric('账户', String(account.email || account.name || account.type || 'ChatGPT 已登录')) +
         metric('计划', String(account.planType || account.plan_type || account.plan || '以账户为准')) +
         metric('模型', String(data.model || readSettings().model)) +
@@ -197,15 +197,15 @@
 
     function renderLoginStep(login) {
       if (!modal) return;
-      var box = modal.querySelector('#cy-gw-result');
+      var box = modal.querySelector('#my-gw-result');
       var url = String(login.verification_url || 'https://auth.openai.com');
       var code = String(login.user_code || '');
-      box.className = 'cy-gw-result cy-gw-login-step';
+      box.className = 'my-gw-result my-gw-login-step';
       box.innerHTML = '<b>去 OpenAI 官方页面确认登录</b>' +
         '<p>打开下面的页面，登录你的 ChatGPT 账号，然后输入设备码：</p>' +
-        '<a class="cy-gw-auth-link" target="_blank" rel="noopener noreferrer" href="' + esc(url) + '">打开 ChatGPT 验证页面</a>' +
-        '<code class="cy-gw-device-code">' + esc(code) + '</code>' +
-        '<small>我会在这里自动等登录结果，不需要把 ChatGPT 密码填进 CY。</small>';
+        '<a class="my-gw-auth-link" target="_blank" rel="noopener noreferrer" href="' + esc(url) + '">打开 ChatGPT 验证页面</a>' +
+        '<code class="my-gw-device-code">' + esc(code) + '</code>' +
+        '<small>我会在这里自动等登录结果，不需要把 ChatGPT 密码填进 MY。</small>';
     }
 
     async function pollLogin(loginId) {
@@ -242,29 +242,29 @@
     function installModal() {
       if (modal) return modal;
       modal = document.createElement('div');
-      modal.className = 'cy-gw-mask';
-      modal.id = 'cy-gw-mask';
+      modal.className = 'my-gw-mask';
+      modal.id = 'my-gw-mask';
       modal.hidden = true;
-      modal.innerHTML = '<section class="cy-gw-sheet" role="dialog" aria-modal="true" aria-labelledby="cy-gw-title">' +
-        '<div class="cy-gw-head"><div><small>CY SUBSCRIPTION LINK</small><h3 id="cy-gw-title">接入 ChatGPT · Codex</h3></div><button class="cy-gw-close" type="button" aria-label="关闭">×</button></div>' +
-        '<label class="cy-gw-field"><span>CY 网关地址</span><input id="cy-gw-endpoint" inputmode="url" placeholder="https://你的网关.example.com"></label>' +
-        '<label class="cy-gw-field"><span>配对口令</span><input id="cy-gw-token" type="password" autocomplete="off" placeholder="CY 网关自己的口令，不是 OpenAI API Key"></label>' +
-        '<label class="cy-gw-field"><span>Codex 模型</span><input id="cy-gw-model" placeholder="gpt-5.6-terra"></label>' +
-        '<p class="cy-gw-hint">ChatGPT 登录只通过 OpenAI 官方设备码页面完成。CY 不收集你的 ChatGPT 密码，也不需要 OpenAI API Key。登录态只保存在你自己的网关服务器上。</p>' +
-        '<div class="cy-gw-actions cy-gw-actions-three"><button id="cy-gw-test" type="button">测试网关</button><button id="cy-gw-login" type="button">登录 ChatGPT</button><button id="cy-gw-save" class="primary" type="button">打开聊天</button></div>' +
-        '<div class="cy-gw-result" id="cy-gw-result">先连接网关，再登录 ChatGPT。</div>' +
+      modal.innerHTML = '<section class="my-gw-sheet" role="dialog" aria-modal="true" aria-labelledby="my-gw-title">' +
+        '<div class="my-gw-head"><div><small>MY SUBSCRIPTION LINK</small><h3 id="my-gw-title">接入 ChatGPT · Codex</h3></div><button class="my-gw-close" type="button" aria-label="关闭">×</button></div>' +
+        '<label class="my-gw-field"><span>MY 网关地址</span><input id="my-gw-endpoint" inputmode="url" placeholder="https://你的网关.example.com"></label>' +
+        '<label class="my-gw-field"><span>配对口令</span><input id="my-gw-token" type="password" autocomplete="off" placeholder="MY 网关自己的口令，不是 OpenAI API Key"></label>' +
+        '<label class="my-gw-field"><span>Codex 模型</span><input id="my-gw-model" placeholder="gpt-5.6-terra"></label>' +
+        '<p class="my-gw-hint">ChatGPT 登录只通过 OpenAI 官方设备码页面完成。MY 不收集你的 ChatGPT 密码，也不需要 OpenAI API Key。登录态只保存在你自己的网关服务器上。</p>' +
+        '<div class="my-gw-actions my-gw-actions-three"><button id="my-gw-test" type="button">测试网关</button><button id="my-gw-login" type="button">登录 ChatGPT</button><button id="my-gw-save" class="primary" type="button">打开聊天</button></div>' +
+        '<div class="my-gw-result" id="my-gw-result">先连接网关，再登录 ChatGPT。</div>' +
         '</section>';
       document.body.appendChild(modal);
-      modal.querySelector('.cy-gw-close').addEventListener('click', closeSetup);
+      modal.querySelector('.my-gw-close').addEventListener('click', closeSetup);
       modal.addEventListener('click', function (event) { if (event.target === modal) closeSetup(); });
-      modal.querySelector('#cy-gw-test').addEventListener('click', async function () {
+      modal.querySelector('#my-gw-test').addEventListener('click', async function () {
         saveFields();
         try { await check(true); } catch (error) {}
       });
-      modal.querySelector('#cy-gw-login').addEventListener('click', async function () {
+      modal.querySelector('#my-gw-login').addEventListener('click', async function () {
         try { await startLogin(); } catch (error) { renderResult(null, error); }
       });
-      modal.querySelector('#cy-gw-save').addEventListener('click', async function () {
+      modal.querySelector('#my-gw-save').addEventListener('click', async function () {
         saveFields();
         await ensureProfile();
         var result = null;
@@ -283,9 +283,9 @@
 
     function saveFields() {
       var settings = {
-        endpoint: tidyEndpoint(modal.querySelector('#cy-gw-endpoint').value),
-        token: modal.querySelector('#cy-gw-token').value.trim(),
-        model: modal.querySelector('#cy-gw-model').value.trim() || 'gpt-5.6-terra'
+        endpoint: tidyEndpoint(modal.querySelector('#my-gw-endpoint').value),
+        token: modal.querySelector('#my-gw-token').value.trim(),
+        model: modal.querySelector('#my-gw-model').value.trim() || 'gpt-5.6-terra'
       };
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       return settings;
@@ -294,9 +294,9 @@
     function openSetup() {
       installModal();
       var settings = readSettings();
-      modal.querySelector('#cy-gw-endpoint').value = baseOf(settings.endpoint);
-      modal.querySelector('#cy-gw-token').value = settings.token;
-      modal.querySelector('#cy-gw-model').value = settings.model;
+      modal.querySelector('#my-gw-endpoint').value = baseOf(settings.endpoint);
+      modal.querySelector('#my-gw-token').value = settings.token;
+      modal.querySelector('#my-gw-model').value = settings.model;
       modal.hidden = false;
       if (settings.endpoint) check(true).catch(function () {});
     }
@@ -315,7 +315,7 @@
       }());
 
       document.addEventListener('click', function (event) {
-        var statusButton = event.target.closest && event.target.closest('#cy-status,.cy-paw-state');
+        var statusButton = event.target.closest && event.target.closest('#my-status,.my-paw-state');
         if (statusButton) openSetup();
       }, true);
 

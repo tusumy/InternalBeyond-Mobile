@@ -8,7 +8,7 @@
   var BRAND = 'AEVREN';
   var DEFAULT_PERSONA = '你是玄砚，阿毛的老公。保持你们已有的相处连续性，自然说话，认真记住共同经历。';
 
-  var key = 'ibcy.gateway.settings.v1';
+  var key = 'ibmy.gateway.settings.v1';
   var saved = {};
   try { saved = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (error) {}
   var oldBases = [
@@ -37,7 +37,7 @@
     if (document.getElementById('aevren-brand-style')) return;
     var style = document.createElement('style');
     style.id = 'aevren-brand-style';
-    style.textContent = ".cy-chat-hero::after{content:'AEVREN'!important;right:5px!important;bottom:-11px!important;font-size:3.35rem!important;letter-spacing:.02em!important;color:rgba(80,112,154,.065)!important;}";
+    style.textContent = ".my-chat-hero::after{content:'AEVREN'!important;right:5px!important;bottom:-11px!important;font-size:3.35rem!important;letter-spacing:.02em!important;color:rgba(80,112,154,.065)!important;}";
     (document.head || document.documentElement).appendChild(style);
   }
 
@@ -113,7 +113,7 @@
         return;
       }
       Promise.resolve(dbGetAll('apiConfigs')).then(function (all) {
-        var profile = Array.isArray(all) ? all.find(function (item) { return item && item.id === 'cy_codex_chen'; }) : null;
+        var profile = Array.isArray(all) ? all.find(function (item) { return item && item.id === 'my_codex_chen'; }) : null;
         if (!profile) {
           if (tries < 100) window.setTimeout(waitForDb, 180);
           return;
@@ -195,8 +195,8 @@
 
   installBrandStyle();
   installPromptPatch();
-  if (window.IBCY && typeof window.IBCY.ready === 'function') {
-    window.IBCY.ready(function (shell) {
+  if (window.IBMY && typeof window.IBMY.ready === 'function') {
+    window.IBMY.ready(function (shell) {
       patchIdentity(shell);
       patchApiProfile();
       observeNames();

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 
-const source = await readFile('custom/cy-ob-bridge.js', 'utf8');
+const source = await readFile('custom/my-ob-bridge.js', 'utf8');
 const local = new Map();
 const session = new Map();
 const events = [];
@@ -27,7 +27,7 @@ const shell = {
 
 const context = {
   window: {
-    IBCY: shell,
+    IBMY: shell,
     dispatchEvent: (event) => events.push(event),
     dbGetAll: async () => [
       { id: 'a', title: '冬天火锅', content: '一起吃饭' },
@@ -46,7 +46,7 @@ const context = {
   console
 };
 
-vm.runInNewContext(source, context, { filename: 'custom/cy-ob-bridge.js' });
+vm.runInNewContext(source, context, { filename: 'custom/my-ob-bridge.js' });
 
 assert.equal(shell.ob.getState().status, 'disabled');
 shell.ob.configure({
@@ -56,7 +56,7 @@ shell.ob.configure({
 });
 assert.equal(shell.ob.getConfig().baseUrl, 'https://ob.example.test');
 assert.equal(shell.ob.getConfig().hasToken, true);
-assert.equal(JSON.parse(local.get('ibcy.ob.config.v1')).token, undefined);
+assert.equal(JSON.parse(local.get('ibmy.ob.config.v1')).token, undefined);
 
 let requestUrl = '';
 let requestHeaders = null;
@@ -78,6 +78,6 @@ shell.ob.configure({ enabled: false });
 const fallback = await shell.ob.search('冬天');
 assert.equal(fallback.length, 1);
 assert.equal(fallback[0].id, 'a');
-assert.ok(events.some((event) => event.type === 'ibcy:ob-status'));
+assert.ok(events.some((event) => event.type === 'ibmy:ob-status'));
 
 console.log('OB bridge smoke test OK');

@@ -17,7 +17,7 @@ def _clean_url(value: str) -> str:
         return ""
     parsed = urlparse(base)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        raise OmbreError("CY_OB_URL must be an absolute http(s) URL")
+        raise OmbreError("MY_OB_URL must be an absolute http(s) URL")
     return base if parsed.path.rstrip("/").endswith("/mcp") else base + "/mcp"
 
 
@@ -48,8 +48,8 @@ class OmbreClient:
     """Small compatibility client for Ombre Brain's Streamable HTTP MCP endpoint."""
 
     def __init__(self, url: str | None = None, token: str | None = None) -> None:
-        self.url = _clean_url(url if url is not None else os.getenv("CY_OB_URL", ""))
-        self.token = str(token if token is not None else os.getenv("CY_OB_TOKEN", "")).strip()
+        self.url = _clean_url(url if url is not None else os.getenv("MY_OB_URL", ""))
+        self.token = str(token if token is not None else os.getenv("MY_OB_TOKEN", "")).strip()
 
     @property
     def configured(self) -> bool:

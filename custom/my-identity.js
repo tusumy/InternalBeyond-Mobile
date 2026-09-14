@@ -1,14 +1,14 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.ready !== 'function') return;
 
   api.ready(function (shell) {
     if (shell.__identityInstalled) return;
     shell.__identityInstalled = true;
 
-    var STORAGE_KEY = 'ibcy.identity.profiles.v1';
+    var STORAGE_KEY = 'ibmy.identity.profiles.v1';
     var defaults = {
       yingying: { id: 'yingying', name: '莹莹', initial: '莹', avatar: '' },
       chen: { id: 'chen', name: '澈', initial: '澈', avatar: '' }
@@ -34,7 +34,7 @@
 
     function writeProfiles(profiles) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
-      window.dispatchEvent(new CustomEvent('ibcy:identity-change', { detail: clone(profiles) }));
+      window.dispatchEvent(new CustomEvent('ibmy:identity-change', { detail: clone(profiles) }));
     }
 
     function getProfile(actor) {
@@ -45,7 +45,7 @@
     function buildAvatar(actor, className) {
       var profile = getProfile(actor);
       var node = document.createElement('span');
-      node.className = className || 'cy-paw-row-avatar';
+      node.className = className || 'my-paw-row-avatar';
       node.dataset.actor = actor;
       node.setAttribute('aria-label', profile.name + '头像');
       if (profile.avatar) {
@@ -55,7 +55,7 @@
         node.appendChild(img);
       } else {
         var text = document.createElement('span');
-        text.className = 'cy-avatar-initial';
+        text.className = 'my-avatar-initial';
         text.textContent = profile.initial;
         node.appendChild(text);
       }
@@ -69,26 +69,26 @@
     }
 
     function decorateRow(row) {
-      if (!row || !row.classList || !row.classList.contains('cy-paw-event-row')) return;
-      var actor = row.classList.contains('cy-paw-from-chen') ? 'chen' : 'yingying';
-      var existing = row.querySelector(':scope > .cy-paw-row-avatar');
+      if (!row || !row.classList || !row.classList.contains('my-paw-event-row')) return;
+      var actor = row.classList.contains('my-paw-from-chen') ? 'chen' : 'yingying';
+      var existing = row.querySelector(':scope > .my-paw-row-avatar');
       if (existing) {
         if (existing.dataset.actor !== actor) refreshAvatarNode(existing, actor);
         return;
       }
-      var avatar = buildAvatar(actor, 'cy-paw-row-avatar');
-      row.classList.add('cy-paw-has-avatar');
+      var avatar = buildAvatar(actor, 'my-paw-row-avatar');
+      row.classList.add('my-paw-has-avatar');
       if (actor === 'chen') row.insertBefore(avatar, row.firstChild);
       else row.appendChild(avatar);
     }
 
     function refreshInteractionAvatars() {
-      document.querySelectorAll('#conv #cv-msgs .mrow.cy-paw-event-row').forEach(function (row) {
-        var actor = row.classList.contains('cy-paw-from-chen') ? 'chen' : 'yingying';
-        var existing = row.querySelector(':scope > .cy-paw-row-avatar');
+      document.querySelectorAll('#conv #cv-msgs .mrow.my-paw-event-row').forEach(function (row) {
+        var actor = row.classList.contains('my-paw-from-chen') ? 'chen' : 'yingying';
+        var existing = row.querySelector(':scope > .my-paw-row-avatar');
         if (existing) refreshAvatarNode(existing, actor);
         else decorateRow(row);
-        row.classList.add('cy-paw-has-avatar');
+        row.classList.add('my-paw-has-avatar');
       });
     }
 
@@ -103,8 +103,8 @@
         mutations.forEach(function (mutation) {
           Array.prototype.forEach.call(mutation.addedNodes || [], function (node) {
             if (!node || node.nodeType !== 1) return;
-            if (node.matches && node.matches('.mrow.cy-paw-event-row')) decorateRow(node);
-            if (node.querySelectorAll) node.querySelectorAll('.mrow.cy-paw-event-row').forEach(decorateRow);
+            if (node.matches && node.matches('.mrow.my-paw-event-row')) decorateRow(node);
+            if (node.querySelectorAll) node.querySelectorAll('.mrow.my-paw-event-row').forEach(decorateRow);
           });
         });
       });
@@ -150,10 +150,10 @@
       var profile = getProfile(actor);
       var card = modal.querySelector('[data-profile="' + actor + '"]');
       if (!card) return;
-      var holder = card.querySelector('.cy-id-avatar');
+      var holder = card.querySelector('.my-id-avatar');
       holder.innerHTML = '';
-      holder.appendChild(buildAvatar(actor, 'cy-id-avatar-inner'));
-      var state = card.querySelector('.cy-id-profile-state');
+      holder.appendChild(buildAvatar(actor, 'my-id-avatar-inner'));
+      var state = card.querySelector('.my-id-profile-state');
       if (state) state.textContent = profile.avatar ? '已使用自选头像' : '正在使用字头像';
     }
 
@@ -164,7 +164,7 @@
 
     function setStatus(text, error) {
       if (!modal) return;
-      var node = modal.querySelector('#cy-id-status');
+      var node = modal.querySelector('#my-id-status');
       if (!node) return;
       node.textContent = text || '';
       node.classList.toggle('error', Boolean(error));
@@ -190,7 +190,7 @@
 
     function chooseAvatar(actor) {
       activeActor = actor;
-      var input = modal && modal.querySelector('#cy-id-file');
+      var input = modal && modal.querySelector('#my-id-file');
       if (!input) return;
       input.value = '';
       input.click();
@@ -199,27 +199,27 @@
     function ensureModal() {
       if (modal) return modal;
       modal = document.createElement('div');
-      modal.id = 'cy-id-mask';
-      modal.className = 'cy-id-mask';
+      modal.id = 'my-id-mask';
+      modal.className = 'my-id-mask';
       modal.hidden = true;
       modal.innerHTML =
-        '<section class="cy-id-sheet" role="dialog" aria-modal="true" aria-labelledby="cy-id-title">' +
-          '<div class="cy-id-head"><div><small>CY IDENTITIES</small><h3 id="cy-id-title">我们两个的头像</h3></div><button class="cy-id-close" type="button" aria-label="关闭">×</button></div>' +
-          '<p class="cy-id-hint">头像只保存在这台设备，不会提交到公开仓库。互动按钮会自动读取这里的头像。</p>' +
-          '<div class="cy-id-profile" data-profile="yingying">' +
-            '<div class="cy-id-avatar"></div><div class="cy-id-profile-copy"><b>莹莹</b><span class="cy-id-profile-state"></span></div>' +
-            '<div class="cy-id-profile-actions"><button type="button" data-pick="yingying">换头像</button><button type="button" data-reset="yingying">恢复</button></div>' +
+        '<section class="my-id-sheet" role="dialog" aria-modal="true" aria-labelledby="my-id-title">' +
+          '<div class="my-id-head"><div><small>MY IDENTITIES</small><h3 id="my-id-title">我们两个的头像</h3></div><button class="my-id-close" type="button" aria-label="关闭">×</button></div>' +
+          '<p class="my-id-hint">头像只保存在这台设备，不会提交到公开仓库。互动按钮会自动读取这里的头像。</p>' +
+          '<div class="my-id-profile" data-profile="yingying">' +
+            '<div class="my-id-avatar"></div><div class="my-id-profile-copy"><b>莹莹</b><span class="my-id-profile-state"></span></div>' +
+            '<div class="my-id-profile-actions"><button type="button" data-pick="yingying">换头像</button><button type="button" data-reset="yingying">恢复</button></div>' +
           '</div>' +
-          '<div class="cy-id-profile" data-profile="chen">' +
-            '<div class="cy-id-avatar"></div><div class="cy-id-profile-copy"><b>澈</b><span class="cy-id-profile-state"></span></div>' +
-            '<div class="cy-id-profile-actions"><button type="button" data-pick="chen">换头像</button><button type="button" data-reset="chen">恢复</button></div>' +
+          '<div class="my-id-profile" data-profile="chen">' +
+            '<div class="my-id-avatar"></div><div class="my-id-profile-copy"><b>澈</b><span class="my-id-profile-state"></span></div>' +
+            '<div class="my-id-profile-actions"><button type="button" data-pick="chen">换头像</button><button type="button" data-reset="chen">恢复</button></div>' +
           '</div>' +
-          '<div class="cy-id-status" id="cy-id-status" aria-live="polite"></div>' +
-          '<input id="cy-id-file" type="file" accept="image/*" hidden>' +
+          '<div class="my-id-status" id="my-id-status" aria-live="polite"></div>' +
+          '<input id="my-id-file" type="file" accept="image/*" hidden>' +
         '</section>';
       document.body.appendChild(modal);
 
-      modal.querySelector('.cy-id-close').addEventListener('click', closeSetup);
+      modal.querySelector('.my-id-close').addEventListener('click', closeSetup);
       modal.addEventListener('click', function (event) { if (event.target === modal) closeSetup(); });
       modal.querySelectorAll('[data-pick]').forEach(function (button) {
         button.addEventListener('click', function () { chooseAvatar(button.getAttribute('data-pick')); });
@@ -227,7 +227,7 @@
       modal.querySelectorAll('[data-reset]').forEach(function (button) {
         button.addEventListener('click', function () { resetAvatar(button.getAttribute('data-reset')); });
       });
-      modal.querySelector('#cy-id-file').addEventListener('change', function (event) {
+      modal.querySelector('#my-id-file').addEventListener('change', function (event) {
         var file = event.target.files && event.target.files[0];
         if (!file || !activeActor) return;
         setStatus('正在处理头像…');
@@ -254,20 +254,20 @@
     }
 
     function installEntry() {
-      var tools = document.querySelector('#cy-paw-panel .cy-paw-tools');
-      if (!tools || document.getElementById('cy-avatar-settings')) {
+      var tools = document.querySelector('#my-paw-panel .my-paw-tools');
+      if (!tools || document.getElementById('my-avatar-settings')) {
         if (!tools) window.setTimeout(installEntry, 250);
         return;
       }
       var button = document.createElement('button');
-      button.id = 'cy-avatar-settings';
+      button.id = 'my-avatar-settings';
       button.type = 'button';
       button.textContent = '头像';
       button.addEventListener('click', openSetup);
       tools.insertBefore(button, tools.firstChild);
     }
 
-    window.addEventListener('ibcy:identity-change', refreshInteractionAvatars);
+    window.addEventListener('ibmy:identity-change', refreshInteractionAvatars);
     shell.identity = {
       getProfile: getProfile,
       getProfiles: readProfiles,

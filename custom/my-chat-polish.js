@@ -1,14 +1,14 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.ready !== 'function') return;
 
   api.ready(function (shell) {
     if (shell.__chatPolishInstalled) return;
     shell.__chatPolishInstalled = true;
 
-    var SETTINGS_KEY = 'ibcy.gateway.settings.v1';
+    var SETTINGS_KEY = 'ibmy.gateway.settings.v1';
     var FALLBACK_TARGETS = ['手', '头发', '耳朵', '脸颊', '嘴', '颈窝', '肩膀', '胸口', '腰', '小腹'];
     var FALLBACK_COUNTS = [1, 2, 3, 5];
     var messageObserver = null;
@@ -29,7 +29,7 @@
     function avatarNode(actor) {
       var p = profile(actor);
       var avatar = document.createElement('span');
-      avatar.className = 'cy-chat-avatar';
+      avatar.className = 'my-chat-avatar';
       avatar.dataset.actor = actor;
       avatar.setAttribute('aria-label', (p.name || actor) + '头像');
       if (p.avatar) {
@@ -78,13 +78,13 @@
         var actor = actorOf(message);
         if (!actor) return;
         var row = bubble.closest('.mrow');
-        if (!row || row.classList.contains('cy-paw-command-only')) return;
+        if (!row || row.classList.contains('my-paw-command-only')) return;
 
-        row.classList.add('cy-chat-identity-row');
-        row.classList.toggle('cy-chat-from-yingying', actor === 'yingying');
-        row.classList.toggle('cy-chat-from-chen', actor === 'chen');
-        row.classList.toggle('cy-paw-from-yingying', actor === 'yingying' && row.classList.contains('cy-paw-event-row'));
-        row.classList.toggle('cy-paw-from-chen', actor === 'chen' && row.classList.contains('cy-paw-event-row'));
+        row.classList.add('my-chat-identity-row');
+        row.classList.toggle('my-chat-from-yingying', actor === 'yingying');
+        row.classList.toggle('my-chat-from-chen', actor === 'chen');
+        row.classList.toggle('my-paw-from-yingying', actor === 'yingying' && row.classList.contains('my-paw-event-row'));
+        row.classList.toggle('my-paw-from-chen', actor === 'chen' && row.classList.contains('my-paw-event-row'));
         entries.push({ row: row, actor: actor });
       });
 
@@ -94,13 +94,13 @@
         var actor = entry.actor;
         var startsTurn = actor !== previousActor;
 
-        row.classList.toggle('cy-chat-turn-start', startsTurn);
-        row.classList.toggle('cy-chat-turn-follow', !startsTurn);
-        row.querySelectorAll(':scope > .cy-chat-avatar').forEach(function (node) { node.remove(); });
+        row.classList.toggle('my-chat-turn-start', startsTurn);
+        row.classList.toggle('my-chat-turn-follow', !startsTurn);
+        row.querySelectorAll(':scope > .my-chat-avatar').forEach(function (node) { node.remove(); });
 
         var avatar = avatarNode(actor);
         if (!startsTurn) {
-          avatar.classList.add('cy-chat-avatar-placeholder');
+          avatar.classList.add('my-chat-avatar-placeholder');
           avatar.setAttribute('aria-hidden', 'true');
           avatar.removeAttribute('aria-label');
         }
@@ -167,13 +167,13 @@
 
     function heading(title, section, id) {
       var wrap = document.createElement('div');
-      wrap.className = 'cy-compose-heading';
+      wrap.className = 'my-compose-heading';
       if (id) wrap.id = id;
       var label = document.createElement('small');
       label.textContent = title;
       var edit = document.createElement('button');
       edit.type = 'button';
-      edit.className = 'cy-compose-edit';
+      edit.className = 'my-compose-edit';
       edit.dataset.section = section;
       edit.textContent = '编辑';
       edit.addEventListener('click', function () { openEditor(section); });
@@ -190,16 +190,16 @@
     }
 
     function renderActions(actionsEl, lexicon) {
-      var oldHeading = document.getElementById('cy-compose-actions-heading');
+      var oldHeading = document.getElementById('my-compose-actions-heading');
       if (!oldHeading) {
-        oldHeading = heading('动作', 'actions', 'cy-compose-actions-heading');
+        oldHeading = heading('动作', 'actions', 'my-compose-actions-heading');
         actionsEl.parentNode.insertBefore(oldHeading, actionsEl);
       }
       actionsEl.textContent = '';
       (lexicon.actions || []).forEach(function (action) {
         var button = document.createElement('button');
         button.type = 'button';
-        button.className = 'cy-compose-action';
+        button.className = 'my-compose-action';
         button.dataset.value = action.id;
         button.textContent = action.label;
         button.classList.toggle('selected', selected.actionId === action.id);
@@ -217,10 +217,10 @@
 
     function buildChoiceGroup(title, section, className, values, key) {
       var block = document.createElement('section');
-      block.className = 'cy-compose-group ' + className;
+      block.className = 'my-compose-group ' + className;
       block.appendChild(heading(title, section));
       var choices = document.createElement('div');
-      choices.className = 'cy-compose-choices';
+      choices.className = 'my-compose-choices';
       values.forEach(function (value) {
         var button = document.createElement('button');
         button.type = 'button';
@@ -239,7 +239,7 @@
     }
 
     function updateConfirm() {
-      var confirm = document.getElementById('cy-compose-confirm');
+      var confirm = document.getElementById('my-compose-confirm');
       if (!confirm) return;
       var parts = [];
       if (selected.actionLabel) parts.push(selected.actionLabel);
@@ -264,13 +264,13 @@
     }
 
     function renderEditor() {
-      var editor = document.getElementById('cy-compose-editor');
+      var editor = document.getElementById('my-compose-editor');
       if (!editor || !editorSection) return;
       editor.hidden = false;
       editor.textContent = '';
 
       var title = document.createElement('div');
-      title.className = 'cy-compose-editor-head';
+      title.className = 'my-compose-editor-head';
       var titleText = document.createElement('b');
       titleText.textContent = editorSection === 'actions' ? '编辑动作' : editorSection === 'targets' ? '编辑落点' : '编辑次数';
       var close = document.createElement('button');
@@ -282,10 +282,10 @@
       editor.appendChild(title);
 
       var list = document.createElement('div');
-      list.className = 'cy-compose-editor-list';
+      list.className = 'my-compose-editor-list';
       editorDraft.forEach(function (item, index) {
         var row = document.createElement('div');
-        row.className = 'cy-compose-editor-row';
+        row.className = 'my-compose-editor-row';
         var input = document.createElement('input');
         input.type = editorSection === 'counts' ? 'number' : 'text';
         input.min = editorSection === 'counts' ? '1' : '';
@@ -328,7 +328,7 @@
       editor.appendChild(list);
 
       var tools = document.createElement('div');
-      tools.className = 'cy-compose-editor-tools';
+      tools.className = 'my-compose-editor-tools';
       var add = document.createElement('button');
       add.type = 'button';
       add.textContent = '＋ 新增';
@@ -379,12 +379,12 @@
       editorSection = section;
       editorDraft = draftFor(section, lexicon);
       renderEditor();
-      var editor = document.getElementById('cy-compose-editor');
+      var editor = document.getElementById('my-compose-editor');
       if (editor && typeof editor.scrollIntoView === 'function') editor.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
 
     function closeEditor() {
-      var editor = document.getElementById('cy-compose-editor');
+      var editor = document.getElementById('my-compose-editor');
       editorSection = '';
       editorDraft = [];
       if (editor) {
@@ -394,11 +394,11 @@
     }
 
     function renderComposer() {
-      var panel = document.getElementById('cy-paw-panel');
-      var actions = document.getElementById('cy-paw-actions');
+      var panel = document.getElementById('my-paw-panel');
+      var actions = document.getElementById('my-paw-actions');
       if (!panel || !actions) return;
 
-      var headTitle = panel.querySelector('.cy-paw-head b');
+      var headTitle = panel.querySelector('.my-paw-head b');
       if (headTitle) headTitle.textContent = '戳一戳';
       var intro = panel.querySelector(':scope > p');
       if (intro) intro.textContent = '动作、落点和次数都可以自己改；我和你共用这一份。';
@@ -407,27 +407,27 @@
       ensureSelection(lexicon);
       renderActions(actions, lexicon);
 
-      var extra = document.getElementById('cy-compose-extra');
+      var extra = document.getElementById('my-compose-extra');
       if (!extra) {
         extra = document.createElement('div');
-        extra.id = 'cy-compose-extra';
-        extra.className = 'cy-compose-extra';
-        var feedbackNode = document.getElementById('cy-paw-feedback');
-        panel.insertBefore(extra, feedbackNode || panel.querySelector('.cy-paw-tools'));
+        extra.id = 'my-compose-extra';
+        extra.className = 'my-compose-extra';
+        var feedbackNode = document.getElementById('my-paw-feedback');
+        panel.insertBefore(extra, feedbackNode || panel.querySelector('.my-paw-tools'));
       }
       extra.textContent = '';
-      extra.appendChild(buildChoiceGroup('落在哪', 'targets', 'cy-compose-targets', lexicon.targets || [], 'target'));
-      extra.appendChild(buildChoiceGroup('次数', 'counts', 'cy-compose-counts', lexicon.counts || [], 'count'));
+      extra.appendChild(buildChoiceGroup('落在哪', 'targets', 'my-compose-targets', lexicon.targets || [], 'target'));
+      extra.appendChild(buildChoiceGroup('次数', 'counts', 'my-compose-counts', lexicon.counts || [], 'count'));
 
       var editor = document.createElement('div');
-      editor.id = 'cy-compose-editor';
-      editor.className = 'cy-compose-editor';
+      editor.id = 'my-compose-editor';
+      editor.className = 'my-compose-editor';
       editor.hidden = true;
       extra.appendChild(editor);
 
       var confirm = document.createElement('button');
-      confirm.id = 'cy-compose-confirm';
-      confirm.className = 'cy-compose-confirm';
+      confirm.id = 'my-compose-confirm';
+      confirm.className = 'my-compose-confirm';
       confirm.type = 'button';
       confirm.addEventListener('click', function () {
         if (!selected.actionId || !shell.paw) return;
@@ -442,13 +442,13 @@
         else return;
         confirm.disabled = true;
         Promise.resolve(sender).then(function () {
-          var feedback = document.getElementById('cy-paw-feedback');
+          var feedback = document.getElementById('my-paw-feedback');
           var display = selected.actionLabel + (selected.target ? ' · ' + selected.target : '') + ((selected.count || 1) > 1 ? ' ×' + selected.count : '');
           if (feedback) {
             feedback.textContent = '已送进聊天 · ' + display;
             feedback.classList.add('show');
           }
-          var close = document.getElementById('cy-paw-close');
+          var close = document.getElementById('my-paw-close');
           window.setTimeout(function () { if (close) close.click(); }, 220);
         }).catch(function () {
           confirm.disabled = false;
@@ -459,8 +459,8 @@
     }
 
     function installComposer() {
-      var panel = document.getElementById('cy-paw-panel');
-      var actions = document.getElementById('cy-paw-actions');
+      var panel = document.getElementById('my-paw-panel');
+      var actions = document.getElementById('my-paw-actions');
       if (!panel || !actions) {
         window.setTimeout(installComposer, 220);
         return;
@@ -478,7 +478,7 @@
     }
 
     function refreshModelPill() {
-      var pill = document.getElementById('cy-model-pill');
+      var pill = document.getElementById('my-model-pill');
       if (!pill) return;
       pill.textContent = readModel() + '  ▾';
     }
@@ -489,25 +489,25 @@
         window.setTimeout(installModelPill, 220);
         return;
       }
-      if (document.getElementById('cy-model-pill')) {
+      if (document.getElementById('my-model-pill')) {
         refreshModelPill();
         return;
       }
       var pill = document.createElement('button');
-      pill.id = 'cy-model-pill';
+      pill.id = 'my-model-pill';
       pill.type = 'button';
       pill.setAttribute('aria-label', '选择 Codex 模型');
       pill.addEventListener('click', function () {
-        var gateway = document.getElementById('cy-status') || document.querySelector('.cy-paw-state');
+        var gateway = document.getElementById('my-status') || document.querySelector('.my-paw-state');
         if (gateway) gateway.click();
       });
       composer.appendChild(pill);
       refreshModelPill();
     }
 
-    window.addEventListener('ibcy:identity-change', scheduleDecorate);
-    window.addEventListener('ibcy:gateway-status', refreshModelPill);
-    window.addEventListener('ibcy:interaction-lexicon-change', function () {
+    window.addEventListener('ibmy:identity-change', scheduleDecorate);
+    window.addEventListener('ibmy:gateway-status', refreshModelPill);
+    window.addEventListener('ibmy:interaction-lexicon-change', function () {
       closeEditor();
       renderComposer();
     });
@@ -515,7 +515,7 @@
       if (event.key === SETTINGS_KEY) refreshModelPill();
     });
     document.addEventListener('click', function (event) {
-      if (event.target.closest && event.target.closest('#cy-paw')) window.setTimeout(renderComposer, 30);
+      if (event.target.closest && event.target.closest('#my-paw')) window.setTimeout(renderComposer, 30);
     });
 
     observeMessages();

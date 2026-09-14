@@ -1,15 +1,15 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.ready !== 'function') return;
 
   api.ready(function (shell) {
     if (shell.__pawStreamFastInstalled) return;
     shell.__pawStreamFastInstalled = true;
 
-    var PROCESSED_KEY = 'ibcy.paw.v2.processed.v1';
-    var MARKER_RE = /\[\[CY_PAW\s+([^\]]{1,512})\]\]/g;
+    var PROCESSED_KEY = 'ibmy.paw.v2.processed.v1';
+    var MARKER_RE = /\[\[MY_PAW\s+([^\]]{1,512})\]\]/g;
     var scheduled = false;
     var busy = false;
 
@@ -75,7 +75,7 @@
       var textEl = bubble.querySelector('.m-text');
       if (!textEl) return;
       var visible = String(textEl.textContent || '');
-      if (visible.indexOf('[[CY_PAW') < 0 || visible.indexOf(']]') < 0) return;
+      if (visible.indexOf('[[MY_PAW') < 0 || visible.indexOf(']]') < 0) return;
 
       var messageId = String(bubble.getAttribute('data-id') || '');
       var commands = [];

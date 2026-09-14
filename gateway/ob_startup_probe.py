@@ -38,18 +38,18 @@ def safe_detail(value: object) -> str:
 async def main() -> None:
     client = OmbreClient()
     if not client.configured:
-        print("[CY_OB_PROBE] configured=0", flush=True)
+        print("[MY_OB_PROBE] configured=0", flush=True)
         return
 
     try:
         # Read-only smoke test first so OmbreClient.call() can flatten nested transport errors.
         await asyncio.wait_for(client.search("测试", max_results=1), timeout=18)
     except asyncio.TimeoutError:
-        print("[CY_OB_PROBE] configured=1 online=0 category=timeout", flush=True)
+        print("[MY_OB_PROBE] configured=1 online=0 category=timeout", flush=True)
         return
     except Exception as exc:
         print(
-            f"[CY_OB_PROBE] configured=1 online=0 category={classify_error(exc)} detail={safe_detail(exc)}",
+            f"[MY_OB_PROBE] configured=1 online=0 category={classify_error(exc)} detail={safe_detail(exc)}",
             flush=True,
         )
         return
@@ -57,11 +57,11 @@ async def main() -> None:
     try:
         status = await asyncio.wait_for(client.status(), timeout=18)
     except asyncio.TimeoutError:
-        print("[CY_OB_PROBE] configured=1 online=1 search_call=ok tools=unknown status_category=timeout", flush=True)
+        print("[MY_OB_PROBE] configured=1 online=1 search_call=ok tools=unknown status_category=timeout", flush=True)
         return
     except Exception as exc:
         print(
-            f"[CY_OB_PROBE] configured=1 online=1 search_call=ok tools=unknown status_category={classify_error(exc)} detail={safe_detail(exc)}",
+            f"[MY_OB_PROBE] configured=1 online=1 search_call=ok tools=unknown status_category={classify_error(exc)} detail={safe_detail(exc)}",
             flush=True,
         )
         return
@@ -69,7 +69,7 @@ async def main() -> None:
     if not status.get("online"):
         error = status.get("error")
         print(
-            f"[CY_OB_PROBE] configured=1 online=1 search_call=ok tools=unknown status_category={classify_error(error)} detail={safe_detail(error)}",
+            f"[MY_OB_PROBE] configured=1 online=1 search_call=ok tools=unknown status_category={classify_error(error)} detail={safe_detail(error)}",
             flush=True,
         )
         return
@@ -78,7 +78,7 @@ async def main() -> None:
     has_search = "breath_search" in tools
     has_hold = "hold" in tools
     print(
-        f"[CY_OB_PROBE] configured=1 online=1 search={int(has_search)} hold={int(has_hold)} tools={len(tools)} search_call=ok",
+        f"[MY_OB_PROBE] configured=1 online=1 search={int(has_search)} hold={int(has_hold)} tools={len(tools)} search_call=ok",
         flush=True,
     )
 

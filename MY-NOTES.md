@@ -1,11 +1,11 @@
-# CY 改造层
+# MY 改造层
 
 这条分支用于在保留 InternalBeyond Mobile 上游结构和数据兼容性的前提下，逐步加入自己的功能。
 
 ## 约定
 
 - 尽量不把新增逻辑继续塞进巨型 `index.html`。
-- 新功能放进 `custom/`，通过 `window.IBCY.register()` 注册。
+- 新功能放进 `custom/`，通过 `window.IBMY.register()` 注册。
 - 不改原有 IndexedDB 名称与备份结构，除非附带迁移脚本。
 - 每次提交运行 `node scripts/check.mjs`、`node scripts/check-inline.mjs` 和 JavaScript 语法检查。
 

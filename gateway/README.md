@@ -1,4 +1,4 @@
-# CY Codex subscription gateway
+# MY Codex subscription gateway
 
 This server connects the static Internal Beyond page to one long-lived `codex app-server` process. It uses the existing Codex subscription login, not an OpenAI API key.
 
@@ -18,7 +18,7 @@ The Codex authentication cache is sensitive. Keep `~/.codex/auth.json` on the se
 
 ```bash
 cp .env.example .env
-# Edit .env and choose a long random CY_GATEWAY_TOKEN.
+# Edit .env and choose a long random MY_GATEWAY_TOKEN.
 set -a
 . ./.env
 set +a

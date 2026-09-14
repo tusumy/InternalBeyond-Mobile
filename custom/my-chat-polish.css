@@ -1,6 +1,6 @@
-/* CY chat polish: unified identities, bottom interaction sheet, compact model entry. */
+/* MY chat polish: unified identities, bottom interaction sheet, compact model entry. */
 
-#conv #cv-msgs .mrow.cy-chat-identity-row {
+#conv #cv-msgs .mrow.my-chat-identity-row {
   display: flex !important;
   flex-direction: row !important;
   align-items: flex-end !important;
@@ -10,15 +10,15 @@
   padding-right: 0 !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-chat-from-yingying {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-chat-from-yingying {
   justify-content: flex-end !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-chat-from-chen {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-chat-from-chen {
   justify-content: flex-start !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row > .cy-chat-avatar {
+#conv #cv-msgs .mrow.my-chat-identity-row > .my-chat-avatar {
   width: 31px;
   height: 31px;
   flex: 0 0 31px;
@@ -33,68 +33,68 @@
   box-shadow: 0 5px 13px rgba(54,82,119,.12), inset 0 1px 0 rgba(255,255,255,.9);
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row > .cy-chat-avatar.cy-chat-avatar-placeholder {
+#conv #cv-msgs .mrow.my-chat-identity-row > .my-chat-avatar.my-chat-avatar-placeholder {
   visibility: hidden;
   pointer-events: none;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row > .cy-chat-avatar[data-actor="chen"] {
+#conv #cv-msgs .mrow.my-chat-identity-row > .my-chat-avatar[data-actor="chen"] {
   color: #455f81;
   background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(224,233,246,.94));
 }
 
-#conv #cv-msgs .cy-chat-avatar img {
+#conv #cv-msgs .my-chat-avatar img {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
 }
 
-#conv #cv-msgs .cy-chat-avatar > span {
+#conv #cv-msgs .my-chat-avatar > span {
   font: 650 .68rem/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row .m-body {
+#conv #cv-msgs .mrow.my-chat-identity-row .m-body {
   width: auto !important;
   max-width: min(78vw, 620px) !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-chat-from-yingying .m-body {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-chat-from-yingying .m-body {
   align-items: flex-end !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-chat-from-chen .m-body {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-chat-from-chen .m-body {
   align-items: flex-start !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-paw-event-row {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-paw-event-row {
   margin: 2px 0 !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-paw-event-row > .cy-paw-row-avatar {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-paw-event-row > .my-paw-row-avatar {
   display: none !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-paw-event-row .m.cy-paw-event {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-paw-event-row .m.my-paw-event {
   min-width: 0 !important;
   max-width: min(62vw, 235px) !important;
   padding: 8px 11px !important;
   border-radius: 16px !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-chat-from-yingying .m.cy-paw-event {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-chat-from-yingying .m.my-paw-event {
   border-radius: 16px 16px 6px 16px !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-chat-from-chen .m.cy-paw-event {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-chat-from-chen .m.my-paw-event {
   border-radius: 16px 16px 16px 6px !important;
 }
 
-#conv #cv-msgs .mrow.cy-chat-identity-row.cy-paw-event-row .cy-paw-event-actor {
+#conv #cv-msgs .mrow.my-chat-identity-row.my-paw-event-row .my-paw-event-actor {
   display: none !important;
 }
 
-#cy-paw-panel {
+#my-paw-panel {
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
@@ -112,11 +112,11 @@
   transform-origin: bottom center !important;
 }
 
-#cy-paw-panel.open {
+#my-paw-panel.open {
   transform: translateY(0) !important;
 }
 
-#cy-paw-panel::before {
+#my-paw-panel::before {
   content: '';
   display: block;
   width: 42px;
@@ -126,27 +126,27 @@
   background: rgba(87,111,145,.22);
 }
 
-#cy-paw-panel .cy-paw-head small {
+#my-paw-panel .my-paw-head small {
   display: none;
 }
 
-#cy-paw-panel .cy-paw-head b {
+#my-paw-panel .my-paw-head b {
   font-size: 1.05rem;
 }
 
-#cy-paw-panel > p {
+#my-paw-panel > p {
   margin: 8px 0 13px !important;
   font-size: .72rem !important;
 }
 
-#cy-paw-actions {
+#my-paw-actions {
   display: flex !important;
   flex-wrap: wrap;
   gap: 8px !important;
 }
 
-#cy-paw-actions .cy-compose-action,
-.cy-compose-choices button {
+#my-paw-actions .my-compose-action,
+.my-compose-choices button {
   min-width: 64px;
   height: 39px;
   padding: 0 14px;
@@ -158,47 +158,47 @@
   font: 560 .78rem/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
 
-#cy-paw-actions .cy-compose-action.selected,
-.cy-compose-choices button.selected {
+#my-paw-actions .my-compose-action.selected,
+.my-compose-choices button.selected {
   color: #3d628f;
   border-color: rgba(104,145,199,.24);
   background: linear-gradient(145deg, rgba(223,238,255,.98), rgba(205,225,251,.92));
   box-shadow: 0 7px 16px rgba(64,98,143,.10), inset 0 1px 0 rgba(255,255,255,.95);
 }
 
-.cy-compose-extra {
+.my-compose-extra {
   margin-top: 16px;
 }
 
-.cy-compose-group {
+.my-compose-group {
   margin-top: 13px;
 }
 
-.cy-compose-group > small {
+.my-compose-group > small {
   display: block;
   margin-bottom: 8px;
   color: #8a98ab;
   font-size: .64rem;
 }
 
-.cy-compose-choices {
+.my-compose-choices {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.cy-compose-targets .cy-compose-choices button {
+.my-compose-targets .my-compose-choices button {
   min-width: 58px;
 }
 
-.cy-compose-counts .cy-compose-choices button {
+.my-compose-counts .my-compose-choices button {
   min-width: 48px;
   height: 34px;
   padding: 0 10px;
   font-size: .68rem;
 }
 
-.cy-compose-confirm {
+.my-compose-confirm {
   width: 100%;
   height: 48px;
   margin-top: 18px;
@@ -210,13 +210,13 @@
   font: 620 .86rem/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
 
-.cy-compose-confirm:disabled {
+.my-compose-confirm:disabled {
   color: #91a0b4;
   background: rgba(120,150,190,.10);
   box-shadow: none;
 }
 
-#cy-paw-panel .cy-paw-tools {
+#my-paw-panel .my-paw-tools {
   margin-top: 11px;
   opacity: .72;
 }
@@ -226,7 +226,7 @@
   padding-top: 34px !important;
 }
 
-#cy-model-pill {
+#my-model-pill {
   position: absolute;
   top: 6px;
   left: 70px;
@@ -243,36 +243,36 @@
   white-space: nowrap;
 }
 
-body.theme-infernal #cy-paw-panel {
+body.theme-infernal #my-paw-panel {
   background: linear-gradient(160deg, rgba(39,51,74,.98), rgba(24,33,53,.97)) !important;
 }
 
-body.theme-infernal #cy-paw-actions .cy-compose-action,
-body.theme-infernal .cy-compose-choices button,
-body.theme-infernal #cy-model-pill {
+body.theme-infernal #my-paw-actions .my-compose-action,
+body.theme-infernal .my-compose-choices button,
+body.theme-infernal #my-model-pill {
   color: #c4d2e6;
   border-color: rgba(255,255,255,.09);
   background: rgba(255,255,255,.055);
 }
 
 @media (max-width: 390px) {
-  #conv #cv-msgs .mrow.cy-chat-identity-row > .cy-chat-avatar {
+  #conv #cv-msgs .mrow.my-chat-identity-row > .my-chat-avatar {
     width: 29px;
     height: 29px;
     flex-basis: 29px;
   }
 
-  #conv #cv-msgs .mrow.cy-chat-identity-row .m-body {
+  #conv #cv-msgs .mrow.my-chat-identity-row .m-body {
     max-width: 79vw !important;
   }
 
-  #cy-paw-panel {
+  #my-paw-panel {
     padding-left: 15px !important;
     padding-right: 15px !important;
   }
 
-  #cy-paw-actions .cy-compose-action,
-  .cy-compose-choices button {
+  #my-paw-actions .my-compose-action,
+  .my-compose-choices button {
     min-width: 60px;
     padding-left: 12px;
     padding-right: 12px;

@@ -1,16 +1,16 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.ready !== 'function') return;
 
   api.ready(function (shell) {
     if (shell.__mutualPawInstalled) return;
     shell.__mutualPawInstalled = true;
 
-    var EVENTS_KEY = 'ibcy.paw.events.v1';
-    var PROCESSED_KEY = 'ibcy.paw.processed.v1';
-    var MARKER_RE = /\[\[CY_PAW\s+action="([^"]{1,64})"(?:\s+label="([^"]{0,64})")?(?:\s+count="(\d{1,3})")?\s*\]\]/g;
+    var EVENTS_KEY = 'ibmy.paw.events.v1';
+    var PROCESSED_KEY = 'ibmy.paw.processed.v1';
+    var MARKER_RE = /\[\[MY_PAW\s+action="([^"]{1,64})"(?:\s+label="([^"]{0,64})")?(?:\s+count="(\d{1,3})")?\s*\]\]/g;
     var pending = null;
     var scanTimer = 0;
     var fetchPolls = 0;
@@ -44,7 +44,7 @@
       var events = readEvents();
       events.push(detail);
       writeJson(EVENTS_KEY, events.slice(-160));
-      window.dispatchEvent(new CustomEvent('ibcy:interaction', { detail: detail }));
+      window.dispatchEvent(new CustomEvent('ibmy:interaction', { detail: detail }));
     }
 
     function clampCount(value) {
@@ -99,7 +99,7 @@
 
     function makeDetail(action, actor, target, count, context, extra) {
       var now = new Date();
-      var key = extra && extra.idempotency_key ? extra.idempotency_key : uuid();
+      var key = extra && extra.idempotenmy_key ? extra.idempotenmy_key : uuid();
       return {
         id: key,
         type: 'interaction.paw',
@@ -110,11 +110,11 @@
         target: target,
         source: extra && extra.source ? extra.source : 'chat_button',
         source_message_id: extra && extra.source_message_id ? extra.source_message_id : '',
-        identity_id: localStorage.getItem('ibcy.identity_id') || 'cy',
+        identity_id: localStorage.getItem('ibmy.identity_id') || 'my',
         thread_id: context && context.thread ? String(context.thread.id || '') : '',
         timestamp: now.toISOString(),
         created_at: now.toISOString(),
-        idempotency_key: key
+        idempotenmy_key: key
       };
     }
 
@@ -127,12 +127,12 @@
         actor: detail.actor,
         target: detail.target,
         source: detail.source,
-        idempotency_key: detail.idempotency_key
+        idempotenmy_key: detail.idempotenmy_key
       });
     }
 
     function pawSvg() {
-      return '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="7.1" cy="7.1" rx="2.2" ry="2.8"/><ellipse cx="16.9" cy="7.1" rx="2.2" ry="2.8"/><ellipse cx="4.8" cy="12.1" rx="2" ry="2.5"/><ellipse cx="19.2" cy="12.1" rx="2" ry="2.5"/><path d="M7.2 17.1c0-3 2.1-5.3 4.8-5.3s4.8 2.3 4.8 5.3c0 2-1.7 3.2-4.8 3.2s-4.8-1.2-4.8-3.2z"/></svg>';
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="7.1" my="7.1" rx="2.2" ry="2.8"/><ellipse cx="16.9" my="7.1" rx="2.2" ry="2.8"/><ellipse cx="4.8" my="12.1" rx="2" ry="2.5"/><ellipse cx="19.2" my="12.1" rx="2" ry="2.5"/><path d="M7.2 17.1c0-3 2.1-5.3 4.8-5.3s4.8 2.3 4.8 5.3c0 2-1.7 3.2-4.8 3.2s-4.8-1.2-4.8-3.2z"/></svg>';
     }
 
     function decorateMessage(message, root) {
@@ -147,29 +147,29 @@
       var text = bubble.querySelector('.m-text');
       var fromChen = detail.actor === 'chen';
       if (row) {
-        row.classList.add('cy-paw-event-row');
-        row.classList.toggle('cy-paw-from-chen', fromChen);
-        row.classList.toggle('cy-paw-from-yingying', !fromChen);
+        row.classList.add('my-paw-event-row');
+        row.classList.toggle('my-paw-from-chen', fromChen);
+        row.classList.toggle('my-paw-from-yingying', !fromChen);
       }
-      bubble.classList.add('cy-paw-event');
+      bubble.classList.add('my-paw-event');
       bubble.dataset.actor = detail.actor || '';
       if (!text) return;
       text.textContent = '';
       var mark = document.createElement('span');
-      mark.className = 'cy-paw-event-mark';
+      mark.className = 'my-paw-event-mark';
       if (fromChen) {
         var sparkle = document.createElement('span');
-        sparkle.className = 'cy-paw-sparkle';
+        sparkle.className = 'my-paw-sparkle';
         sparkle.textContent = '✦';
         mark.appendChild(sparkle);
       } else {
         var icon = document.createElement('span');
-        icon.className = 'cy-paw-mini';
+        icon.className = 'my-paw-mini';
         icon.innerHTML = pawSvg();
         mark.appendChild(icon);
       }
       var actor = document.createElement('span');
-      actor.className = 'cy-paw-event-actor';
+      actor.className = 'my-paw-event-actor';
       actor.textContent = fromChen ? '澈' : '莹莹';
       var label = document.createElement('b');
       label.textContent = String(detail.label || detail.action || '碰了碰');
@@ -177,7 +177,7 @@
       mark.appendChild(label);
       if (clampCount(detail.count) > 1) {
         var count = document.createElement('span');
-        count.className = 'cy-paw-event-count';
+        count.className = 'my-paw-event-count';
         count.textContent = '×' + clampCount(detail.count);
         mark.appendChild(count);
       }
@@ -201,7 +201,7 @@
         return null;
       }
       var message = {
-        id: 'msg_' + Date.now() + '_paw_' + String(detail.idempotency_key).replace(/[^a-z0-9]/gi, '').slice(-14),
+        id: 'msg_' + Date.now() + '_paw_' + String(detail.idempotenmy_key).replace(/[^a-z0-9]/gi, '').slice(-14),
         role: role,
         content: interactionPrompt(detail),
         friendId: context.cfg.id,
@@ -246,12 +246,12 @@
     }
 
     function feedback(action, count) {
-      var box = document.getElementById('cy-paw-feedback');
+      var box = document.getElementById('my-paw-feedback');
       if (box) {
         box.textContent = '已戳爸爸 · ' + action.label + (count > 1 ? ' ×' + count : '');
         box.classList.add('show');
       }
-      var paw = document.getElementById('cy-paw');
+      var paw = document.getElementById('my-paw');
       if (paw) {
         paw.classList.remove('tapped');
         void paw.offsetWidth;
@@ -286,7 +286,7 @@
     }
 
     document.addEventListener('click', function (event) {
-      var chip = event.target.closest && event.target.closest('.cy-paw-chip');
+      var chip = event.target.closest && event.target.closest('.my-paw-chip');
       if (!chip || !shell.paw) return;
       var action = findAction('', String(chip.textContent || '').trim());
       event.preventDefault();
@@ -318,7 +318,7 @@
       var text = bubble.querySelector('.m-text');
       if (!text) return;
       var original = text.textContent || '';
-      if (original.indexOf('CY_PAW') < 0) return;
+      if (original.indexOf('MY_PAW') < 0) return;
       var walker = document.createTreeWalker(text, NodeFilter.SHOW_TEXT);
       var node;
       var changed = false;
@@ -330,10 +330,10 @@
           changed = true;
         }
       }
-      if (!changed && original.indexOf('CY_PAW') >= 0) text.textContent = cleaned;
+      if (!changed && original.indexOf('MY_PAW') >= 0) text.textContent = cleaned;
       if (!cleaned) {
         var row = bubble.closest('.mrow');
-        if (row) row.classList.add('cy-paw-command-only');
+        if (row) row.classList.add('my-paw-command-only');
       }
     }
 
@@ -346,7 +346,7 @@
       var detail = makeDetail(action, 'chen', 'yingying', count, context, {
         source: 'assistant_action',
         source_message_id: String(sourceMessageId || ''),
-        idempotency_key: key
+        idempotenmy_key: key
       });
       return appendInteraction(detail, 'assistant', context);
     }
@@ -357,7 +357,7 @@
       for (var i = 0; i < messages.length; i += 1) {
         var message = messages[i];
         if (!message || message.interaction || String(message.role || '').toLowerCase() !== 'assistant' || typeof message.content !== 'string') continue;
-        if (message.content.indexOf('CY_PAW') < 0) continue;
+        if (message.content.indexOf('MY_PAW') < 0) continue;
         var commands = [];
         MARKER_RE.lastIndex = 0;
         var match;
@@ -393,13 +393,13 @@
 
     function protocolText() {
       var actions = getActions().map(function (item) { return item.id + '=' + item.label; }).join(', ');
-      return '\n\n[CY_MUTUAL_PAW]\n你可以像莹莹一样主动触发互动按钮。仅在自然、合适的时候使用，不要每条回复都触发。若要触发，在整段回复最后单独追加一个标记：[[CY_PAW action="动作ID" label="动作文字" count="1"]]。可用动作：' + actions + '。count 为 1-99；连续想做多次时直接写次数。不要解释这个标记，也不要把标记放进代码块。';
+      return '\n\n[MY_MUTUAL_PAW]\n你可以像莹莹一样主动触发互动按钮。仅在自然、合适的时候使用，不要每条回复都触发。若要触发，在整段回复最后单独追加一个标记：[[MY_PAW action="动作ID" label="动作文字" count="1"]]。可用动作：' + actions + '。count 为 1-99；连续想做多次时直接写次数。不要解释这个标记，也不要把标记放进代码块。';
     }
 
     function addProtocol(body) {
       if (!body || !Array.isArray(body.messages)) return body;
       var already = body.messages.some(function (message) {
-        return message && typeof message.content === 'string' && message.content.indexOf('[CY_MUTUAL_PAW]') >= 0;
+        return message && typeof message.content === 'string' && message.content.indexOf('[MY_MUTUAL_PAW]') >= 0;
       });
       if (already) return body;
       var cloned = Object.assign({}, body, { messages: body.messages.map(function (message) { return Object.assign({}, message); }) });
@@ -411,11 +411,11 @@
 
     function wrapFetch() {
       var current = window.fetch;
-      if (!current || current.__ibcyMutualPaw) return;
+      if (!current || current.__ibmyMutualPaw) return;
       var wrapped = async function (input, init) {
         try {
           var cfg = typeof _activeCfg !== 'undefined' ? _activeCfg : null;
-          if (cfg && (cfg.subscriptionGateway || cfg.id === 'cy_codex_chen') && init && typeof init.body === 'string') {
+          if (cfg && (cfg.subscriptionGateway || cfg.id === 'my_codex_chen') && init && typeof init.body === 'string') {
             var body = JSON.parse(init.body);
             var next = addProtocol(body);
             if (next !== body) init = Object.assign({}, init, { body: JSON.stringify(next) });
@@ -423,7 +423,7 @@
         } catch (error) {}
         return current(input, init);
       };
-      wrapped.__ibcyMutualPaw = true;
+      wrapped.__ibmyMutualPaw = true;
       window.fetch = wrapped;
     }
 

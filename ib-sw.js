@@ -7,37 +7,37 @@ const IB_CORE=[
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
-  './custom/cy-shell.css',
-  './custom/cy-shell.js',
-  './custom/cy-ob-bridge.js',
-  './custom/cy-gateway.css',
-  './custom/cy-gateway.js',
-  './custom/cy-gateway-defaults.js',
-  './custom/cy-model-picker.css',
-  './custom/cy-model-picker.js',
-  './custom/cy-mutual-paw.css',
-  './custom/cy-paw-align-fix.css',
-  './custom/cy-mutual-paw.js',
-  './custom/cy-interaction-lexicon.js',
-  './custom/cy-interaction-protocol-v2.js',
-  './custom/cy-paw-stream-fast.js',
-  './custom/cy-interaction-thread-v2.js',
-  './custom/cy-chat-polish.css',
-  './custom/cy-chat-polish.js',
-  './custom/cy-interaction-editor.css',
-  './custom/cy-native-avatar.css',
+  './custom/my-shell.css',
+  './custom/my-shell.js',
+  './custom/my-ob-bridge.js',
+  './custom/my-gateway.css',
+  './custom/my-gateway.js',
+  './custom/my-gateway-defaults.js',
+  './custom/my-model-picker.css',
+  './custom/my-model-picker.js',
+  './custom/my-mutual-paw.css',
+  './custom/my-paw-align-fix.css',
+  './custom/my-mutual-paw.js',
+  './custom/my-interaction-lexicon.js',
+  './custom/my-interaction-protocol-v2.js',
+  './custom/my-paw-stream-fast.js',
+  './custom/my-interaction-thread-v2.js',
+  './custom/my-chat-polish.css',
+  './custom/my-chat-polish.js',
+  './custom/my-interaction-editor.css',
+  './custom/my-native-avatar.css',
   './apps/catalog.json',
   './apps/catalog.js'
 ];
-const APP_HEAD='<link rel="stylesheet" href="./custom/cy-shell.css?v=0.5.0" data-ibcy-loader="1"><link rel="stylesheet" href="./custom/cy-mutual-paw.css?v=0.2.0" data-ibcy-loader="1"><link rel="stylesheet" href="./custom/cy-paw-align-fix.css?v=0.1.0" data-ibcy-loader="1"><link rel="stylesheet" href="./custom/cy-chat-polish.css?v=0.3.0" data-ibcy-loader="1"><link rel="stylesheet" href="./custom/cy-interaction-editor.css?v=0.1.0" data-ibcy-loader="1"><link rel="stylesheet" href="./custom/cy-native-avatar.css?v=0.1.0" data-ibcy-loader="1"><link rel="stylesheet" href="./custom/cy-model-picker.css?v=0.1.0" data-ibcy-loader="1">';
-const APP_BODY='<script src="./custom/cy-gateway-defaults.js?v=0.4.1" data-ibcy-loader="1"></script><script src="./custom/cy-shell.js?v=0.5.0" data-ibcy-loader="1"></script><script src="./custom/cy-ob-bridge.js?v=0.5.0" data-ibcy-loader="1"></script><script src="./custom/cy-mutual-paw.js?v=0.1.0" data-ibcy-loader="1"></script><script src="./custom/cy-interaction-lexicon.js?v=0.1.0" data-ibcy-loader="1"></script><script src="./custom/cy-interaction-protocol-v2.js?v=0.1.0" data-ibcy-loader="1"></script><script src="./custom/cy-paw-stream-fast.js?v=0.1.0" data-ibcy-loader="1"></script><script src="./custom/cy-interaction-thread-v2.js?v=0.1.0" data-ibcy-loader="1"></script><script src="./custom/cy-chat-polish.js?v=0.3.1" data-ibcy-loader="1"></script><script src="./custom/cy-model-picker.js?v=0.2.0" data-ibcy-loader="1"></script>';
+const APP_HEAD='<link rel="stylesheet" href="./custom/my-shell.css?v=0.5.0" data-ibmy-loader="1"><link rel="stylesheet" href="./custom/my-mutual-paw.css?v=0.2.0" data-ibmy-loader="1"><link rel="stylesheet" href="./custom/my-paw-align-fix.css?v=0.1.0" data-ibmy-loader="1"><link rel="stylesheet" href="./custom/my-chat-polish.css?v=0.3.0" data-ibmy-loader="1"><link rel="stylesheet" href="./custom/my-interaction-editor.css?v=0.1.0" data-ibmy-loader="1"><link rel="stylesheet" href="./custom/my-native-avatar.css?v=0.1.0" data-ibmy-loader="1"><link rel="stylesheet" href="./custom/my-model-picker.css?v=0.1.0" data-ibmy-loader="1">';
+const APP_BODY='<script src="./custom/my-gateway-defaults.js?v=0.4.1" data-ibmy-loader="1"></script><script src="./custom/my-shell.js?v=0.5.0" data-ibmy-loader="1"></script><script src="./custom/my-ob-bridge.js?v=0.5.0" data-ibmy-loader="1"></script><script src="./custom/my-mutual-paw.js?v=0.1.0" data-ibmy-loader="1"></script><script src="./custom/my-interaction-lexicon.js?v=0.1.0" data-ibmy-loader="1"></script><script src="./custom/my-interaction-protocol-v2.js?v=0.1.0" data-ibmy-loader="1"></script><script src="./custom/my-paw-stream-fast.js?v=0.1.0" data-ibmy-loader="1"></script><script src="./custom/my-interaction-thread-v2.js?v=0.1.0" data-ibmy-loader="1"></script><script src="./custom/my-chat-polish.js?v=0.3.1" data-ibmy-loader="1"></script><script src="./custom/my-model-picker.js?v=0.2.0" data-ibmy-loader="1"></script>';
 
 function injectApp(response){
   if(!response||!response.ok)return Promise.resolve(response);
   const type=response.headers.get('content-type')||'';
   if(type.indexOf('text/html')<0)return Promise.resolve(response);
   return response.text().then(function(html){
-    if(html.indexOf('data-ibcy-loader')<0){
+    if(html.indexOf('data-ibmy-loader')<0){
       if(html.indexOf('</head>')>=0)html=html.replace('</head>',APP_HEAD+'</head>');
       if(html.indexOf('</body>')>=0)html=html.replace('</body>',APP_BODY+'</body>');
     }

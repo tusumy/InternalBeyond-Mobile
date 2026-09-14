@@ -1,12 +1,12 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.register !== 'function') return;
 
   api.register('ob-bridge', function (shell) {
-    var CONFIG_KEY = 'ibcy.ob.config.v1';
-    var TOKEN_KEY = 'ibcy.ob.token.v1';
+    var CONFIG_KEY = 'ibmy.ob.config.v1';
+    var TOKEN_KEY = 'ibmy.ob.token.v1';
     var adapter = null;
     var state = {
       status: 'disabled',
@@ -44,7 +44,7 @@
 
     function emit() {
       var detail = Object.assign({}, state, { config: publicConfig() });
-      window.dispatchEvent(new CustomEvent('ibcy:ob-status', { detail: detail }));
+      window.dispatchEvent(new CustomEvent('ibmy:ob-status', { detail: detail }));
       return detail;
     }
 
@@ -86,7 +86,7 @@
       var timer = setTimeout(function () { controller.abort(); }, config.timeoutMs);
       var headers = Object.assign({
         Accept: 'application/json',
-        'X-IBCY-Client': 'InternalBeyond-Mobile'
+        'X-IBMY-Client': 'InternalBeyond-Mobile'
       }, options.headers || {});
       var token = readToken();
       if (token) headers.Authorization = 'Bearer ' + token;
@@ -124,7 +124,7 @@
 
     function useAdapter(nextAdapter) {
       adapter = nextAdapter && typeof nextAdapter === 'object' ? nextAdapter : null;
-      window.dispatchEvent(new CustomEvent('ibcy:ob-adapter', { detail: { ready: !!adapter } }));
+      window.dispatchEvent(new CustomEvent('ibmy:ob-adapter', { detail: { ready: !!adapter } }));
     }
 
     async function localMemories(query) {

@@ -1,24 +1,24 @@
-#conv #cv-msgs .mrow.cy-paw-event-row.cy-paw-has-avatar {
+#conv #cv-msgs .mrow.my-paw-event-row.my-paw-has-avatar {
   gap: 8px;
   align-items: flex-end;
 }
 
-#conv #cv-msgs .mrow.cy-paw-event-row.cy-paw-has-avatar.cy-paw-from-yingying {
+#conv #cv-msgs .mrow.my-paw-event-row.my-paw-has-avatar.my-paw-from-yingying {
   padding-left: 12%;
   padding-right: 0;
 }
 
-#conv #cv-msgs .mrow.cy-paw-event-row.cy-paw-has-avatar.cy-paw-from-chen {
+#conv #cv-msgs .mrow.my-paw-event-row.my-paw-has-avatar.my-paw-from-chen {
   padding-left: 0;
   padding-right: 12%;
 }
 
-#conv #cv-msgs .mrow.cy-paw-event-row.cy-paw-has-avatar .m-body {
+#conv #cv-msgs .mrow.my-paw-event-row.my-paw-has-avatar .m-body {
   max-width: min(72vw, 272px);
 }
 
-.cy-paw-row-avatar,
-.cy-id-avatar-inner {
+.my-paw-row-avatar,
+.my-id-avatar-inner {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -30,58 +30,58 @@
   box-shadow: 0 5px 14px rgba(54,82,119,.12), inset 0 1px 0 rgba(255,255,255,.88);
 }
 
-.cy-paw-row-avatar {
+.my-paw-row-avatar {
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
   border: 1px solid rgba(255,255,255,.86);
 }
 
-.cy-paw-row-avatar[data-actor="chen"],
-.cy-id-profile[data-profile="chen"] .cy-id-avatar-inner {
+.my-paw-row-avatar[data-actor="chen"],
+.my-id-profile[data-profile="chen"] .my-id-avatar-inner {
   background: linear-gradient(145deg, rgba(250,252,255,.98), rgba(219,230,245,.92));
   color: #4c6484;
 }
 
-.cy-paw-row-avatar img,
-.cy-id-avatar-inner img {
+.my-paw-row-avatar img,
+.my-id-avatar-inner img {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
 }
 
-.cy-avatar-initial {
+.my-avatar-initial {
   font: 650 .72rem/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   letter-spacing: -.02em;
 }
 
-#conv #cv-msgs .mrow.cy-paw-has-avatar .cy-paw-event-actor {
+#conv #cv-msgs .mrow.my-paw-has-avatar .my-paw-event-actor {
   display: none;
 }
 
-#conv #cv-msgs .mrow.cy-paw-has-avatar .cy-paw-event-mark {
+#conv #cv-msgs .mrow.my-paw-has-avatar .my-paw-event-mark {
   grid-template-rows: auto;
 }
 
-#conv #cv-msgs .mrow.cy-paw-has-avatar .cy-paw-mini,
-#conv #cv-msgs .mrow.cy-paw-has-avatar .cy-paw-sparkle,
-#conv #cv-msgs .mrow.cy-paw-has-avatar .cy-paw-event-count {
+#conv #cv-msgs .mrow.my-paw-has-avatar .my-paw-mini,
+#conv #cv-msgs .mrow.my-paw-has-avatar .my-paw-sparkle,
+#conv #cv-msgs .mrow.my-paw-has-avatar .my-paw-event-count {
   grid-row: 1;
 }
 
-#conv #cv-msgs .mrow.cy-paw-has-avatar .cy-paw-mini,
-#conv #cv-msgs .mrow.cy-paw-has-avatar .cy-paw-sparkle {
+#conv #cv-msgs .mrow.my-paw-has-avatar .my-paw-mini,
+#conv #cv-msgs .mrow.my-paw-has-avatar .my-paw-sparkle {
   align-self: center;
 }
 
-#conv #cv-msgs .mrow.cy-paw-has-avatar .m.cy-paw-event {
+#conv #cv-msgs .mrow.my-paw-has-avatar .m.my-paw-event {
   min-width: 96px;
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
-.cy-id-mask {
+.my-id-mask {
   position: fixed;
   inset: 0;
   z-index: 90;
@@ -93,11 +93,11 @@
   backdrop-filter: blur(15px);
 }
 
-.cy-id-mask[hidden] {
+.my-id-mask[hidden] {
   display: none !important;
 }
 
-.cy-id-sheet {
+.my-id-sheet {
   width: min(430px, 100%);
   margin: 0 auto;
   padding: 18px;
@@ -109,14 +109,14 @@
   backdrop-filter: blur(28px) saturate(1.35);
 }
 
-.cy-id-head {
+.my-id-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
 
-.cy-id-head small {
+.my-id-head small {
   display: block;
   margin-bottom: 4px;
   color: #8397b2;
@@ -125,13 +125,13 @@
   letter-spacing: .16em;
 }
 
-.cy-id-head h3 {
+.my-id-head h3 {
   margin: 0;
   color: #2f4d70;
   font: 650 1.08rem/1.25 "Noto Serif SC", "PingFang SC", serif;
 }
 
-.cy-id-close {
+.my-id-close {
   width: 31px;
   height: 31px;
   border: 0;
@@ -141,14 +141,14 @@
   font-size: 1.2rem;
 }
 
-.cy-id-hint {
+.my-id-hint {
   margin: 10px 0 14px;
   color: #718198;
   font-size: .72rem;
   line-height: 1.55;
 }
 
-.cy-id-profile {
+.my-id-profile {
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr) auto;
   align-items: center;
@@ -157,44 +157,44 @@
   border-top: 1px solid rgba(112,145,188,.11);
 }
 
-.cy-id-avatar {
+.my-id-avatar {
   width: 58px;
   height: 58px;
 }
 
-.cy-id-avatar-inner {
+.my-id-avatar-inner {
   width: 58px;
   height: 58px;
   border: 1px solid rgba(255,255,255,.86);
 }
 
-.cy-id-avatar-inner .cy-avatar-initial {
+.my-id-avatar-inner .my-avatar-initial {
   font-size: 1.08rem;
 }
 
-.cy-id-profile-copy {
+.my-id-profile-copy {
   min-width: 0;
 }
 
-.cy-id-profile-copy b {
+.my-id-profile-copy b {
   display: block;
   color: #375779;
   font-size: .88rem;
 }
 
-.cy-id-profile-copy span {
+.my-id-profile-copy span {
   display: block;
   margin-top: 4px;
   color: #8a99ad;
   font-size: .62rem;
 }
 
-.cy-id-profile-actions {
+.my-id-profile-actions {
   display: flex;
   gap: 6px;
 }
 
-.cy-id-profile-actions button {
+.my-id-profile-actions button {
   height: 32px;
   padding: 0 10px;
   border: 1px solid rgba(112,145,188,.16);
@@ -204,74 +204,74 @@
   font-size: .65rem;
 }
 
-.cy-id-profile-actions button:first-child {
+.my-id-profile-actions button:first-child {
   color: #fff;
   border-color: transparent;
   background: linear-gradient(145deg, #7897c1, #5b7ba7);
 }
 
-.cy-id-status {
+.my-id-status {
   min-height: 18px;
   margin-top: 9px;
   color: #6c88aa;
   font-size: .65rem;
 }
 
-.cy-id-status.error {
+.my-id-status.error {
   color: #b46872;
 }
 
-body.theme-infernal .cy-id-sheet {
+body.theme-infernal .my-id-sheet {
   border-color: rgba(255,255,255,.1);
   background: linear-gradient(145deg, rgba(45,59,84,.97), rgba(25,34,55,.95));
 }
 
-body.theme-infernal .cy-id-head h3,
-body.theme-infernal .cy-id-profile-copy b {
+body.theme-infernal .my-id-head h3,
+body.theme-infernal .my-id-profile-copy b {
   color: #edf3fb;
 }
 
-body.theme-infernal .cy-id-hint,
-body.theme-infernal .cy-id-profile-copy span {
+body.theme-infernal .my-id-hint,
+body.theme-infernal .my-id-profile-copy span {
   color: #a9b7cb;
 }
 
-body.theme-infernal .cy-id-profile {
+body.theme-infernal .my-id-profile {
   border-top-color: rgba(255,255,255,.08);
 }
 
-body.theme-infernal .cy-id-profile-actions button {
+body.theme-infernal .my-id-profile-actions button {
   color: #d6e2f2;
   border-color: rgba(255,255,255,.1);
   background: rgba(255,255,255,.06);
 }
 
 @media (max-width: 390px) {
-  #conv #cv-msgs .mrow.cy-paw-event-row.cy-paw-has-avatar.cy-paw-from-yingying {
+  #conv #cv-msgs .mrow.my-paw-event-row.my-paw-has-avatar.my-paw-from-yingying {
     padding-left: 6%;
   }
 
-  #conv #cv-msgs .mrow.cy-paw-event-row.cy-paw-has-avatar.cy-paw-from-chen {
+  #conv #cv-msgs .mrow.my-paw-event-row.my-paw-has-avatar.my-paw-from-chen {
     padding-right: 6%;
   }
 
-  .cy-paw-row-avatar {
+  .my-paw-row-avatar {
     width: 28px;
     height: 28px;
     flex-basis: 28px;
   }
 
-  .cy-id-profile {
+  .my-id-profile {
     grid-template-columns: 52px minmax(0, 1fr);
   }
 
-  .cy-id-avatar,
-  .cy-id-avatar-inner {
+  .my-id-avatar,
+  .my-id-avatar-inner {
     width: 52px;
     height: 52px;
   }
 
-  .cy-id-profile-actions {
+  .my-id-profile-actions {
     grid-column: 2;
     justify-content: flex-start;
     margin-top: -4px;

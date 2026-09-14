@@ -1,14 +1,14 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.ready !== 'function') return;
 
   api.ready(function (shell) {
     if (shell.__modelPickerInstalled) return;
     shell.__modelPickerInstalled = true;
 
-    var SETTINGS_KEY = 'ibcy.gateway.settings.v1';
+    var SETTINGS_KEY = 'ibmy.gateway.settings.v1';
     var mask = null;
     var listNode = null;
     var statusNode = null;
@@ -56,7 +56,7 @@
 
     function updatePill(model) {
       var value = String(model || currentModel() || '选择模型');
-      var pill = document.getElementById('cy-model-pill');
+      var pill = document.getElementById('my-model-pill');
       if (pill) {
         pill.textContent = value + '  ▾';
         pill.setAttribute('aria-label', '选择当前聊天模型');
@@ -67,8 +67,8 @@
       if (!mask) return;
       var cfg = activeCfg();
       var sub = isSubscription(cfg);
-      var kicker = mask.querySelector('.cy-model-head small');
-      var desc = mask.querySelector('.cy-model-sub');
+      var kicker = mask.querySelector('.my-model-head small');
+      var desc = mask.querySelector('.my-model-sub');
       if (kicker) kicker.textContent = sub ? 'CHATGPT · CODEX' : 'API MODELS';
       if (desc) desc.textContent = sub
         ? '这里显示当前 ChatGPT / Codex 订阅账号实际返回的可用模型。'
@@ -82,25 +82,25 @@
         return mask;
       }
       mask = document.createElement('div');
-      mask.id = 'cy-model-mask';
-      mask.className = 'cy-model-mask';
+      mask.id = 'my-model-mask';
+      mask.className = 'my-model-mask';
       mask.hidden = true;
-      mask.innerHTML = '<section class="cy-model-sheet" role="dialog" aria-modal="true" aria-labelledby="cy-model-title">' +
-        '<div class="cy-model-handle" aria-hidden="true"></div>' +
-        '<div class="cy-model-head"><div><small>API MODELS</small><h3 id="cy-model-title">选择模型</h3></div><button class="cy-model-close" type="button" aria-label="关闭">×</button></div>' +
-        '<p class="cy-model-sub">这里显示当前聊天所用 API 配置返回的可用模型。</p>' +
-        '<div class="cy-model-status" id="cy-model-status">正在读取模型…</div>' +
-        '<div class="cy-model-list" id="cy-model-list"></div>' +
-        '<div class="cy-model-tools"><button id="cy-model-refresh" type="button">刷新模型列表</button><button id="cy-model-manual" type="button">手动输入</button><button id="cy-model-settings" type="button">API 设置</button></div>' +
+      mask.innerHTML = '<section class="my-model-sheet" role="dialog" aria-modal="true" aria-labelledby="my-model-title">' +
+        '<div class="my-model-handle" aria-hidden="true"></div>' +
+        '<div class="my-model-head"><div><small>API MODELS</small><h3 id="my-model-title">选择模型</h3></div><button class="my-model-close" type="button" aria-label="关闭">×</button></div>' +
+        '<p class="my-model-sub">这里显示当前聊天所用 API 配置返回的可用模型。</p>' +
+        '<div class="my-model-status" id="my-model-status">正在读取模型…</div>' +
+        '<div class="my-model-list" id="my-model-list"></div>' +
+        '<div class="my-model-tools"><button id="my-model-refresh" type="button">刷新模型列表</button><button id="my-model-manual" type="button">手动输入</button><button id="my-model-settings" type="button">API 设置</button></div>' +
         '</section>';
       document.body.appendChild(mask);
-      listNode = mask.querySelector('#cy-model-list');
-      statusNode = mask.querySelector('#cy-model-status');
-      refreshButton = mask.querySelector('#cy-model-refresh');
-      settingsButton = mask.querySelector('#cy-model-settings');
-      manualButton = mask.querySelector('#cy-model-manual');
+      listNode = mask.querySelector('#my-model-list');
+      statusNode = mask.querySelector('#my-model-status');
+      refreshButton = mask.querySelector('#my-model-refresh');
+      settingsButton = mask.querySelector('#my-model-settings');
+      manualButton = mask.querySelector('#my-model-manual');
 
-      mask.querySelector('.cy-model-close').addEventListener('click', close);
+      mask.querySelector('.my-model-close').addEventListener('click', close);
       mask.addEventListener('click', function (event) { if (event.target === mask) close(); });
       refreshButton.addEventListener('click', function () { refresh(true).catch(function () {}); });
       manualButton.addEventListener('click', function () {
@@ -224,7 +224,7 @@
       models.forEach(function (model) {
         var button = document.createElement('button');
         button.type = 'button';
-        button.className = 'cy-model-option';
+        button.className = 'my-model-option';
         button.dataset.model = model;
         button.classList.toggle('selected', model === current);
         button.innerHTML = '<span><b>' + esc(model) + '</b><small>' + (model === current ? '正在使用' : '点一下切换') + '</small></span><i aria-hidden="true">' + (model === current ? '✓' : '›') + '</i>';
@@ -267,7 +267,7 @@
         var cfg = activeCfg();
         if (isSubscription(cfg)) {
           writeSettings({ model: model });
-          var field = document.getElementById('cy-gw-model');
+          var field = document.getElementById('my-gw-model');
           if (field) field.value = model;
           try { if (cfg) cfg.model = model; } catch (error) {}
           try {
@@ -287,7 +287,7 @@
           if (typeof dbPut === 'function') await dbPut('apiConfigs', cfg);
         }
         updatePill(model);
-        window.dispatchEvent(new CustomEvent('ibcy:model-change', { detail: { model: model, configId: cfg && cfg.id || '' } }));
+        window.dispatchEvent(new CustomEvent('ibmy:model-change', { detail: { model: model, configId: cfg && cfg.id || '' } }));
         try { if (typeof toast === 'function') toast('已切换到 ' + model); } catch (error) {}
         close();
       } finally {
@@ -316,7 +316,7 @@
     }
 
     document.addEventListener('click', function (event) {
-      var pill = event.target.closest && event.target.closest('#cy-model-pill');
+      var pill = event.target.closest && event.target.closest('#my-model-pill');
       if (pill) {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -326,8 +326,8 @@
       window.setTimeout(function () { updatePill(); }, 0);
     }, true);
 
-    window.addEventListener('ibcy:gateway-status', function () { updatePill(); });
-    window.addEventListener('ibcy:model-change', function (event) {
+    window.addEventListener('ibmy:gateway-status', function () { updatePill(); });
+    window.addEventListener('ibmy:model-change', function (event) {
       updatePill(event && event.detail && event.detail.model);
     });
     window.addEventListener('storage', function (event) {

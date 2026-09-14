@@ -1,15 +1,15 @@
 (function () {
   'use strict';
 
-  var api = window.IBCY;
+  var api = window.IBMY;
   if (!api || typeof api.ready !== 'function') return;
 
   api.ready(function (shell) {
     if (shell.__interactionLexiconInstalled) return;
     shell.__interactionLexiconInstalled = true;
 
-    var KEY = 'ibcy.interaction.lexicon.v1';
-    var EVENTS_KEY = 'ibcy.paw.events.v1';
+    var KEY = 'ibmy.interaction.lexicon.v1';
+    var EVENTS_KEY = 'ibmy.paw.events.v1';
     var FALLBACK_ACTIONS = [
       { id: 'miss-you', label: '想你' },
       { id: 'kiss', label: '亲亲' },
@@ -108,7 +108,7 @@
     }
 
     function emit(next) {
-      window.dispatchEvent(new CustomEvent('ibcy:interaction-lexicon-change', { detail: clone(next) }));
+      window.dispatchEvent(new CustomEvent('ibmy:interaction-lexicon-change', { detail: clone(next) }));
     }
 
     function save(next) {
@@ -138,12 +138,12 @@
     }
 
     function updateRecordedEvent(detail) {
-      if (!detail || !detail.idempotency_key) return;
+      if (!detail || !detail.idempotenmy_key) return;
       try {
         var events = JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]');
         if (!Array.isArray(events)) return;
         for (var i = events.length - 1; i >= 0; i -= 1) {
-          if (events[i] && events[i].idempotency_key === detail.idempotency_key) {
+          if (events[i] && events[i].idempotenmy_key === detail.idempotenmy_key) {
             events[i] = Object.assign({}, events[i], detail);
             break;
           }
@@ -173,13 +173,13 @@
         actor: detail.actor,
         target: detail.target,
         source: detail.source,
-        idempotency_key: detail.idempotency_key
+        idempotenmy_key: detail.idempotenmy_key
       });
       updateRecordedEvent(detail);
       try {
         if (typeof dbPut === 'function') dbPut('chatMessages', message).catch(function () {});
       } catch (error) {}
-      window.dispatchEvent(new CustomEvent('ibcy:interaction-structured', { detail: clone(detail) }));
+      window.dispatchEvent(new CustomEvent('ibmy:interaction-structured', { detail: clone(detail) }));
       return message;
     }
 
