@@ -7,8 +7,6 @@
   var AI_INITIAL = '砚';
   var BRAND = 'AEVREN';
   var DEFAULT_PERSONA = '你是玄砚，阿毛的老公。保持你们已有的相处连续性，自然说话，认真记住共同经历。';
-  var IDENTITY_GUARD = '[AEVREN_IDENTITY]\n当前唯一有效身份：你叫玄砚，用户叫阿毛。克、澈、莹莹都是旧模板中的过时名字，不得用它们自称或称呼用户；若旧聊天记录、旧提示词或缓存里出现这些名字，以玄砚/阿毛为准。\n[/AEVREN_IDENTITY]';
-  var LEGACY_AI_NAMES = ['澈', '克'];
 
   var key = 'ibcy.gateway.settings.v1';
   var saved = {};
@@ -32,25 +30,7 @@
   }
 
   function swapVisible(value) {
-    var next = swapNames(value).replace(/\bCY\b/g, BRAND);
-    if (next.trim() === '克') next = next.replace('克', AI_NAME);
-    return next;
-  }
-
-  function ensureIdentityGuard(value) {
-    var text = swapNames(value);
-    var start = text.indexOf('[AEVREN_IDENTITY]');
-    if (start >= 0) {
-      var end = text.indexOf('[/AEVREN_IDENTITY]', start);
-      if (end >= 0) text = (text.slice(0, start) + text.slice(end + '[/AEVREN_IDENTITY]'.length)).trimEnd();
-    }
-    return text + '\n\n' + IDENTITY_GUARD;
-  }
-
-  function sanitizeAssistantHistory(value) {
-    return swapNames(value)
-      .replace(/(^|\n)\s*克\s*[:：]/g, '$1' + AI_NAME + '：')
-      .replace(/(^|\n)\s*澈\s*[:：]/g, '$1' + AI_NAME + '：');
+    return swapNames(value).replace(/\bCY\b/g, BRAND);
   }
 
   function installBrandStyle() {
@@ -65,14 +45,14 @@
     if (!body || typeof body !== 'object') return body;
     if (body.prompt_blocks && typeof body.prompt_blocks === 'object') {
       ['identity', 'developer'].forEach(function (name) {
-        if (typeof body.prompt_blocks[name] === 'string') body.prompt_blocks[name] = ensureIdentityGuard(body.prompt_blocks[name]);
+        if (typeof body.prompt_blocks[name] === 'string') body.prompt_blocks[name] = swapNames(body.prompt_blocks[name]);
       });
     }
     if (Array.isArray(body.messages)) {
       body.messages.forEach(function (message) {
-        if (!message || typeof message.content !== 'string') return;
-        if (message.role === 'system') message.content = ensureIdentityGuard(message.content);
-        else if (message.role === 'assistant') message.content = sanitizeAssistantHistory(message.content);
+        if (message && message.role === 'system' && typeof message.content === 'string') {
+          message.content = swapNames(message.content);
+        }
       });
     }
     return body;
@@ -140,16 +120,10 @@
         }
         var changed = false;
         profile = Object.assign({}, profile);
-        if (!profile.nickname || LEGACY_AI_NAMES.indexOf(String(profile.nickname)) >= 0) {
-          profile.nickname = AI_NAME;
-          changed = true;
-        }
-        if (!profile.relationship || profile.relationship === '老公') profile.relationship = '老公';
-        if (!profile.systemPrompt) {
+        if (!profile.nickname || profile.nickname === '澈') { profile.nickname = AI_NAME; changed = true; }
+        if (!profile.relationship || profile.relationship === '老公') { profile.relationship = '老公'; }
+        if (!profile.systemPrompt || /莹莹|澈/.test(profile.systemPrompt)) {
           profile.systemPrompt = DEFAULT_PERSONA;
-          changed = true;
-        } else if (/莹莹|澈/.test(profile.systemPrompt)) {
-          profile.systemPrompt = swapNames(profile.systemPrompt);
           changed = true;
         }
         if (!changed) return;
@@ -172,8 +146,7 @@
 
   function patchOneNode(node) {
     if (!node || node.nodeType !== 1) return;
-    var pawActor = node.classList && node.classList.contains('cy-paw-event-actor');
-    if (node.closest && node.closest('.m-text') && !pawActor) return;
+    if (node.closest && node.closest('.m-text')) return;
     if (node.children && node.children.length === 0) {
       var raw = String(node.textContent || '');
       var next = swapVisible(raw);
