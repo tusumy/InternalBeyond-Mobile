@@ -24,11 +24,12 @@ jobs:
           import re
 
           root = Path('.')
-          skip_dirs = {'.git'}
           binary_exts = {'.png','.jpg','.jpeg','.gif','.webp','.ico','.zip','.apk','.woff','.woff2','.ttf','.otf','.pdf'}
 
-          # First rename files carrying the old namespace in their filename.
-          paths = sorted([p for p in root.rglob('*') if p.is_file() and not any(part in skip_dirs for part in p.parts)], key=lambda p: len(p.parts), reverse=True)
+          def skip(p):
+              return '.git' in p.parts or (len(p.parts) >= 2 and p.parts[0] == '.github' and p.parts[1] == 'workflows')
+
+          paths = sorted([p for p in root.rglob('*') if p.is_file() and not skip(p)], key=lambda p: len(p.parts), reverse=True)
           for p in paths:
               name = p.name.replace('CY-', 'MY-').replace('cy-', 'my-')
               if name != p.name:
@@ -46,9 +47,7 @@ jobs:
           ]
 
           for p in root.rglob('*'):
-              if not p.is_file() or any(part in skip_dirs for part in p.parts):
-                  continue
-              if p.suffix.lower() in binary_exts:
+              if not p.is_file() or skip(p) or p.suffix.lower() in binary_exts:
                   continue
               try:
                   text = p.read_text(encoding='utf-8')
@@ -61,12 +60,9 @@ jobs:
               new = re.sub(r'(?<![A-Za-z0-9])cy(?![A-Za-z0-9])', 'my', new)
               if new != text:
                   p.write_text(new, encoding='utf-8')
-
-          # This workflow is intentionally self-deleting so no migration-only files remain.
-          Path('.github/workflows/namespace-migrate.yml').unlink(missing_ok=True)
           PY
 
-      - name: Verify old namespace is gone
+      - name: Verify old namespace is gone outside workflow files
         shell: bash
         run: |
           python - <<'PY'
@@ -77,6 +73,8 @@ jobs:
           hits = []
           for p in Path('.').rglob('*'):
               if not p.is_file() or '.git' in p.parts or p.suffix.lower() in binary_exts:
+                  continue
+              if len(p.parts) >= 2 and p.parts[0] == '.github' and p.parts[1] == 'workflows':
                   continue
               try: text = p.read_text(encoding='utf-8')
               except Exception: continue
